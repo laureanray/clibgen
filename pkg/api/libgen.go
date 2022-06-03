@@ -27,6 +27,7 @@ func getBookTitleFromSelection(selection *goquery.Selection) string {
 	return title
 }
 
+// Parse HTML and get the data from the table by parsing and iterating through them.
 func getBookDataFromDocument(document *goquery.Document) []Book {
 	var books []Book
 	document.Find(".c > tbody > tr").Each(func(resultsRow int, bookRow *goquery.Selection) {
