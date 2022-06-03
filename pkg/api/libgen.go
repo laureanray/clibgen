@@ -10,6 +10,8 @@ import (
 	"strings"
 )
 
+// Get book title from the selection, in most cases the title is hidden through nested anchor tags.
+// In order to produce a clean output extra texts are also removed.
 func getBookTitleFromSelection(selection *goquery.Selection) string {
 	var title string
 	selection.Find("a").Each(func(v int, s *goquery.Selection) {
