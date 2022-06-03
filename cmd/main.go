@@ -7,10 +7,15 @@ import (
 )
 
 func main() {
-	books, err := api.SearchBookByTitle("Elon Musk")
+	books, err := api.SearchBookByTitle("Life 3.0")
 
 	for _, book := range books {
+		fmt.Println("-------------------------------")
 		fmt.Println("Title: ", book.Title)
+		fmt.Println("Author: ", book.Author)
+		fmt.Println("Publisher: ", book.Publisher)
+		fmt.Println("Extension: ", book.Extension)
+		fmt.Println("Mirrors: ", book.Mirrors)
 	}
 
 	if err != nil {
