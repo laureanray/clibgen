@@ -68,6 +68,41 @@ func getBookDataFromDocument(document *goquery.Document) []Book {
 	return books
 }
 
+func getLinkFromDocument(document *goquery.Document) string {
+	return document.Find("#download a").First().Text()
+}
+
+func downloadBookFromLink(link string) {
+	log.Println("Downloading book ", link)
+
+	resp, err := http.Get(link)
+
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(resp.Body)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	document, err := goquery.NewDocumentFromReader(resp.Body)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	directDownloadLink := getLinkFromDocument(document)
+
+	log.Println(directDownloadLink)
+
+	// do something
+
+}
+
 // TODO: Introduce proper types with pagination
 func SearchBookByTitle(query string) ([]Book, error) {
 	var e error
