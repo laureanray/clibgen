@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
@@ -31,7 +32,7 @@ func getBookTitleFromSelection(selection *goquery.Selection) string {
 func getBookDataFromDocument(document *goquery.Document) []Book {
 	var books []Book
 	document.Find(".c > tbody > tr").Each(func(resultsRow int, bookRow *goquery.Selection) {
-		var id, author, title, publisher, extension string
+		var id, author, title, publisher, extension, year string
 		var mirrors []string
 		if resultsRow != 0 {
 			bookRow.Find("td").Each(func(column int, columnSelection *goquery.Selection) {
@@ -44,6 +45,8 @@ func getBookDataFromDocument(document *goquery.Document) []Book {
 					title = getBookTitleFromSelection(columnSelection)
 				case 3:
 					publisher = columnSelection.Text()
+				case 4:
+					year = columnSelection.Text()
 				case 8:
 					extension = columnSelection.Text()
 				case 9, 10, 11:
@@ -56,6 +59,7 @@ func getBookDataFromDocument(document *goquery.Document) []Book {
 			books = append(books, Book{
 				ID:        id,
 				Author:    author,
+				Year:      year,
 				Title:     title,
 				Publisher: publisher,
 				Extension: extension,
@@ -68,11 +72,11 @@ func getBookDataFromDocument(document *goquery.Document) []Book {
 	return books
 }
 
-func getLinkFromDocument(document *goquery.Document) string {
-	return document.Find("#download a").First().Text()
+func getLinkFromDocument(document *goquery.Document) (string, bool) {
+	return document.Find("#download > h2 > a").First().Attr("href")
 }
 
-func downloadBookFromLink(link string) {
+func getDirectDownloadLink(link string) string {
 	log.Println("Downloading book ", link)
 
 	resp, err := http.Get(link)
@@ -95,16 +99,18 @@ func downloadBookFromLink(link string) {
 		log.Fatal(err)
 	}
 
-	directDownloadLink := getLinkFromDocument(document)
+	directDownloadLink, exists := getLinkFromDocument(document)
 
-	log.Println(directDownloadLink)
+	if exists {
+		return directDownloadLink
+	}
 
 	// do something
-
+	return ""
 }
 
 // TODO: Introduce proper types with pagination
-func SearchBookByTitle(query string) ([]Book, error) {
+func SearchBookByTitle(query string, limit int) ([]Book, error) {
 	var e error
 	queryString := fmt.Sprintf("https://libgen.is/search.php?req=%s&res=25&view=simple&phrase=1&column=def", url.QueryEscape(query))
 	resp, err := http.Get(queryString)
@@ -128,5 +134,44 @@ func SearchBookByTitle(query string) ([]Book, error) {
 	}
 
 	books := getBookDataFromDocument(document)
+
+	if len(books) >= limit {
+		books = books[:limit]
+	}
+
 	return books, e
+}
+
+func BookPrinter(book []Book) {
+	for i, v := range book {
+		fmt.Printf("-[%d]----------------\n", i)
+
+		fmt.Println("Title: ", v.Title)
+		fmt.Println("Year: ", v.Year, " Ext: ", v.Extension)
+		fmt.Println("Author: ", v.Author)
+		//fmt.Println("----------------------")
+	}
+}
+
+// Downloads the file to current working directorhy
+func DownloadSelection(selectedBook Book) {
+
+	path, err := os.Getwd()
+	link := getDirectDownloadLink(selectedBook.Mirrors[0])
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Downloading file to current directory: ", path)
+
+	out, err := os.Create(selectedBook.Title + "." + selectedBook.Extension)
+	defer out.Close()
+
+	resp, err := http.Get(link)
+	defer resp.Body.Close()
+
+	n, err := io.Copy(out, resp.Body)
+
+	fmt.Println("written: ", n)
 }
