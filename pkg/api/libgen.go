@@ -31,7 +31,7 @@ func getBookTitleFromSelection(selection *goquery.Selection) string {
 func getBookDataFromDocument(document *goquery.Document) []Book {
 	var books []Book
 	document.Find(".c > tbody > tr").Each(func(resultsRow int, bookRow *goquery.Selection) {
-		var id, author, title, publisher, extension string
+		var id, author, title, publisher, extension, year string
 		var mirrors []string
 		if resultsRow != 0 {
 			bookRow.Find("td").Each(func(column int, columnSelection *goquery.Selection) {
@@ -44,6 +44,8 @@ func getBookDataFromDocument(document *goquery.Document) []Book {
 					title = getBookTitleFromSelection(columnSelection)
 				case 3:
 					publisher = columnSelection.Text()
+				case 4:
+					year = columnSelection.Text()
 				case 8:
 					extension = columnSelection.Text()
 				case 9, 10, 11:
@@ -56,6 +58,7 @@ func getBookDataFromDocument(document *goquery.Document) []Book {
 			books = append(books, Book{
 				ID:        id,
 				Author:    author,
+				Year:      year,
 				Title:     title,
 				Publisher: publisher,
 				Extension: extension,
@@ -104,7 +107,7 @@ func downloadBookFromLink(link string) {
 }
 
 // TODO: Introduce proper types with pagination
-func SearchBookByTitle(query string) ([]Book, error) {
+func SearchBookByTitle(query string, limit int) ([]Book, error) {
 	var e error
 	queryString := fmt.Sprintf("https://libgen.is/search.php?req=%s&res=25&view=simple&phrase=1&column=def", url.QueryEscape(query))
 	resp, err := http.Get(queryString)
@@ -128,5 +131,10 @@ func SearchBookByTitle(query string) ([]Book, error) {
 	}
 
 	books := getBookDataFromDocument(document)
+
+	if len(books) >= limit {
+		books = books[:limit]
+	}
+
 	return books, e
 }
