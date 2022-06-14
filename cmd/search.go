@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/laureanray/clibgen/pkg/api"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
-	"laureanray/clibgen/pkg/api"
 	"log"
 	"strconv"
 )

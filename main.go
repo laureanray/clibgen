@@ -1,6 +1,6 @@
 package main
 
-import "laureanray/clibgen/cmd"
+import "github.com/laureanray/clibgen/cmd"
 
 func main() {
 	cmd.Execute()
