@@ -1,4 +1,4 @@
-module genread-api
+module laureanray/clibgen
 
 go 1.18
 

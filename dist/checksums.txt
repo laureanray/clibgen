@@ -1,8 +1,0 @@
-09fa443f34f08d66cd8343e9970d13254f1b98c7feac73a371bfcf965e999bb5  libgen-api_0.0.1-next_Windows_arm64.tar.gz
-0b750a936de77212ce29101e3aa5da9b4ee8b4d2f2aaf554817ad15b84d56ca5  libgen-api_0.0.1-next_Darwin_arm64.tar.gz
-624daefeafd0e8b9a6a9940cb930fdfbbba3d777fc9555f6084bb985c9ff0f2a  libgen-api_0.0.1-next_Darwin_x86_64.tar.gz
-6da8f8860d6e2586b0ea8f580e88780f84fcd737ba801ac7c885055512c7d0ad  libgen-api_0.0.1-next_Windows_i386.tar.gz
-94211f7efbfde7a1f67defef2a435a65ea734e73a8ac64e97616b140cd74cd86  libgen-api_0.0.1-next_Linux_x86_64.tar.gz
-ae44ae50d5f511383b24271c65c906c365058d695cd5f60959aff0560c005c14  libgen-api_0.0.1-next_Linux_i386.tar.gz
-b8a1273f20c33c3a58558b7d8fb2fb9b5d6af76fd401b9ceb953c7ebd857a4fc  libgen-api_0.0.1-next_Linux_arm64.tar.gz
-d8165edcb0e5287703074c4cf28fb32a9c6c4d9df56eb9c62f21ab046239f7f5  libgen-api_0.0.1-next_Windows_x86_64.tar.gz

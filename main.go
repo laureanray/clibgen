@@ -1,6 +1,6 @@
 package main
 
-import "genread-api/cmd"
+import "laureanray/clibgen/cmd"
 
 func main() {
 	cmd.Execute()
