@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/schollz/progressbar/v3"
 	"io"
 	"log"
 	"net/http"
@@ -142,36 +143,20 @@ func SearchBookByTitle(query string, limit int) ([]Book, error) {
 	return books, e
 }
 
-func BookPrinter(book []Book) {
-	for i, v := range book {
-		fmt.Printf("-[%d]----------------\n", i)
-
-		fmt.Println("Title: ", v.Title)
-		fmt.Println("Year: ", v.Year, " Ext: ", v.Extension)
-		fmt.Println("Author: ", v.Author)
-		//fmt.Println("----------------------")
-	}
-}
-
-// Downloads the file to current working directorhy
+// DownloadSelection Downloads the file to current working directory
 func DownloadSelection(selectedBook Book) {
-
-	path, err := os.Getwd()
 	link := getDirectDownloadLink(selectedBook.Mirrors[0])
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Downloading file to current directory: ", path)
-
-	out, err := os.Create(selectedBook.Title + "." + selectedBook.Extension)
-	defer out.Close()
-
-	resp, err := http.Get(link)
+	req, _ := http.NewRequest("GET", link, nil)
+	resp, _ := http.DefaultClient.Do(req)
 	defer resp.Body.Close()
+	f, _ := os.OpenFile(strings.Trim(selectedBook.Title, " ")+"."+selectedBook.Extension, os.O_CREATE|os.O_WRONLY, 0644)
+	defer f.Close()
 
-	n, err := io.Copy(out, resp.Body)
+	bar := progressbar.DefaultBytes(
+		resp.ContentLength,
+		"downloading",
+	)
+	io.Copy(io.MultiWriter(f, bar), resp.Body)
 
-	fmt.Println("written: ", n)
+	fmt.Println("File downloaded. ")
 }

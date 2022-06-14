@@ -1,18 +1,12 @@
-/*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"genread-api/pkg/api"
+	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 	"log"
-	"os"
 	"strconv"
-	"strings"
 )
 
 // searchCmd represents the search command
@@ -26,42 +20,42 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		reader := bufio.NewReader(os.Stdin)
-		book, err := api.SearchBookByTitle(args[0], 5)
+		books, err := api.SearchBookByTitle(args[0], 5)
 		if err != nil {
 			log.Fatalln(err)
 		}
-
-		api.BookPrinter(book)
-
-		fmt.Print("Select option: ")
-		option, _ := reader.ReadString('\n')
-
-		option = strings.TrimSuffix(option, "\n")
-
-		intValue, err := strconv.Atoi(option)
 
 		if err != nil {
 			log.Fatal(err)
 			return
 		}
 
-		api.DownloadSelection(book[intValue])
+		var titles []string
 
-		//fmt.Println(text)
+		for _, book := range books {
+			titles = append(titles, book.Title+"."+book.Extension+" (by: "+book.Author+")")
+		}
+
+		prompt := promptui.Select{
+			Label: "Select Day",
+			Items: titles,
+		}
+
+		_, result, err := prompt.Run()
+
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+			return
+		}
+
+		fmt.Printf("You choose %q\n", result)
+
+		selection, _ := strconv.Atoi(result)
+
+		api.DownloadSelection(books[selection])
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(searchCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// searchCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// searchCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
