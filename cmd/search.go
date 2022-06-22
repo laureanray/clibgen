@@ -37,7 +37,7 @@ to quickly create a Cobra application.`,
 		}
 
 		prompt := promptui.Select{
-			Label: "Select Day",
+			Label: "Select Title",
 			Items: titles,
 		}
 
