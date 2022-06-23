@@ -10,5 +10,3 @@ type Book struct {
 	Extension string   `json:"extension"`
 	Mirrors   []string `json:"mirrors"`
 }
-
-type BookService interface{}

@@ -12,13 +12,10 @@ import (
 // searchCmd represents the search command
 var searchCmd = &cobra.Command{
 	Use:   "search",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "library gensis command line / terminal client",
+	Long: `
+clibgen is a CLI application to search and download epubs, pdfs, from library genesis. 
+Useful if you are lazy to open up a browser to download e-books/resources.'`,
 	Run: func(cmd *cobra.Command, args []string) {
 		books, err := api.SearchBookByTitle(args[0], 5)
 		if err != nil {

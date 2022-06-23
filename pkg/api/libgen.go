@@ -78,7 +78,7 @@ func getLinkFromDocument(document *goquery.Document) (string, bool) {
 }
 
 func getDirectDownloadLink(link string) string {
-	log.Println("Downloading book ", link)
+	log.Println("Downloading book from: ", link)
 
 	resp, err := http.Get(link)
 
@@ -110,7 +110,6 @@ func getDirectDownloadLink(link string) string {
 	return ""
 }
 
-// TODO: Introduce proper types with pagination
 func SearchBookByTitle(query string, limit int) ([]Book, error) {
 	var e error
 	queryString := fmt.Sprintf("https://libgen.is/search.php?req=%s&res=25&view=simple&phrase=1&column=def", url.QueryEscape(query))
