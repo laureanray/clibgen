@@ -157,5 +157,5 @@ func DownloadSelection(selectedBook Book) {
 	)
 	io.Copy(io.MultiWriter(f, bar), resp.Body)
 
-	fmt.Println("File downloaded. ")
+	fmt.Println("File downloaded. ", f.Name())
 }

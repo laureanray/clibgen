@@ -9,14 +9,18 @@ import (
 	"strconv"
 )
 
-// searchCmd represents the search command
 var searchCmd = &cobra.Command{
 	Use:   "search",
-	Short: "library gensis command line / terminal client",
-	Long: `
-clibgen is a CLI application to search and download epubs, pdfs, from library genesis. 
-Useful if you are lazy to open up a browser to download e-books/resources.'`,
+	Short: "search for a book, paper or article",
+	Long: `search for a book, paper or article
+
+example: clibgen search "Elon Musk"
+`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) == 0 {
+			fmt.Println("Please enter a search query!")
+			return
+		}
 		books, err := api.SearchBookByTitle(args[0], 5)
 		if err != nil {
 			log.Fatalln(err)
@@ -30,7 +34,7 @@ Useful if you are lazy to open up a browser to download e-books/resources.'`,
 		var titles []string
 
 		for _, book := range books {
-			titles = append(titles, book.Title+"."+book.Extension+" (by: "+book.Author+")")
+			titles = append(titles, book.Title+"(by: "+book.Author+") ["+book.Extension+"]")
 		}
 
 		prompt := promptui.Select{
