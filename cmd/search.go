@@ -9,54 +9,80 @@ import (
 	"strconv"
 )
 
-var searchCmd = &cobra.Command{
-	Use:   "search",
-	Short: "search for a book, paper or article",
-	Long: `search for a book, paper or article
+var (
+	selectedMirror  string
+	numberOfResults = 10
 
-example: clibgen search "Elon Musk"
-`,
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) == 0 {
-			fmt.Println("Please enter a search query!")
-			return
-		}
-		books, err := api.SearchBookByTitle(args[0], 5)
-		if err != nil {
-			log.Fatalln(err)
-		}
+	searchCmd = &cobra.Command{
+		Use:   "search",
+		Short: "search for a book, paper or article",
+		Long: `search for a book, paper or article
+	example: clibgen search "Eloquent JavaScript"`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) == 0 {
+				fmt.Println("Please enter a search query!")
+				return
+			}
 
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+			//var stringFlag = flag.String("mirror", "m", "select which mirror to use (old/new) [libgen.is, libgen.li]")
+			var libgenType = api.LibgenNew
 
-		var titles []string
+			//fmt.Println(&stringFlag)
 
-		for _, book := range books {
-			titles = append(titles, book.Title+"(by: "+book.Author+") ["+book.Extension+"]")
-		}
+			if selectedMirror == "old" {
+				libgenType = api.LibgenOld
+			} else if selectedMirror == "new" {
+				libgenType = api.LibgenNew
+			}
 
-		prompt := promptui.Select{
-			Label: "Select Title",
-			Items: titles,
-		}
+			books, err := api.SearchBookByTitle(args[0], numberOfResults, libgenType)
+			if err != nil {
+				log.Fatalln(err)
+			}
 
-		_, result, err := prompt.Run()
+			if err != nil {
+				log.Fatal(err)
+				return
+			}
 
-		if err != nil {
-			fmt.Printf("Prompt failed %v\n", err)
-			return
-		}
+			var titles []string
 
-		fmt.Printf("You choose %q\n", result)
+			for _, book := range books {
+				titles = append(titles, fmt.Sprintf("[%s] [%s] %s (%s)", book.FileSize, book.Extension, book.Title, book.Author))
+			}
 
-		selection, _ := strconv.Atoi(result)
+			prompt := promptui.Select{
+				Label: "Select Title",
+				Items: titles,
+			}
+			_, result, err := prompt.Run()
 
-		api.DownloadSelection(books[selection])
-	},
-}
+			if err != nil {
+				fmt.Printf("Prompt failed %v\n", err)
+				return
+			}
+
+			log.Printf("You choose [%s]", result)
+
+			selection, _ := strconv.Atoi(result)
+
+			api.DownloadSelection(books[selection], libgenType)
+		},
+	}
+)
 
 func init() {
+	searchCmd.
+		PersistentFlags().
+		StringVarP(&selectedMirror, "mirror", "m", "old", `select which mirror to use
+		options: 
+			"old" -> libgen.is
+			"new" -> liggen.li 
+	`)
+
+	searchCmd.
+		PersistentFlags().
+		IntVarP(&numberOfResults, "number of results", "n", 10, `number of result(s) to be displayed maximum: 25`)
+
 	rootCmd.AddCommand(searchCmd)
 }
