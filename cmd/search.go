@@ -6,7 +6,6 @@ import (
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 	"log"
-	"strconv"
 )
 
 var (
@@ -55,7 +54,8 @@ var (
 				Label: "Select Title",
 				Items: titles,
 			}
-			_, result, err := prompt.Run()
+
+			resultInt, result, err := prompt.Run()
 
 			if err != nil {
 				fmt.Printf("Prompt failed %v\n", err)
@@ -64,9 +64,9 @@ var (
 
 			log.Printf("You choose [%s]", result)
 
-			selection, _ := strconv.Atoi(result)
+			log.Println("Selection: ", resultInt, books[resultInt])
 
-			api.DownloadSelection(books[selection], libgenType)
+			api.DownloadSelection(books[resultInt], libgenType)
 		},
 	}
 )
