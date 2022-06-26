@@ -103,10 +103,11 @@ func getDirectDownloadLink(link string) string {
 	directDownloadLink, exists := getLinkFromDocument(document)
 
 	if exists {
+		log.Println("Direct download link found: ", directDownloadLink)
 		return directDownloadLink
 	}
 
-	// do something
+	log.Println("Direct download link wasn't found returning empty...")
 	return ""
 }
 
