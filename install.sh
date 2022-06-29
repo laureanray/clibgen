@@ -2,8 +2,8 @@
 
 set -e
 
-if ! command -v unzip >/dev/null; then
-	echo "Error: unzip is required to install clibgen" 1>&2
+if ! command -v tar >/dev/null; then
+	echo "Error: tar is required to install clibgen" 1>&2
 	exit 1
 fi
 
