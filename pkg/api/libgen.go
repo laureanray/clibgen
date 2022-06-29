@@ -155,7 +155,7 @@ func getLinkFromDocumentNew(document *goquery.Document) (string, bool) {
 }
 
 func getDirectDownloadLink(link string, libgenType MirrorType) string {
-	log.Println("Obtaining direct download link ...")
+	log.Println("Obtaining direct download link")
 
 	resp, err := http.Get(link)
 

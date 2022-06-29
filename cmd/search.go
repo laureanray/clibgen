@@ -55,16 +55,12 @@ var (
 				Items: titles,
 			}
 
-			resultInt, result, err := prompt.Run()
+			resultInt, _, err := prompt.Run()
 
 			if err != nil {
 				fmt.Printf("Prompt failed %v\n", err)
 				return
 			}
-
-			log.Printf("You choose [%s]", result)
-
-			log.Println("Selection: ", resultInt, books[resultInt])
 
 			api.DownloadSelection(books[resultInt], libgenType)
 		},
