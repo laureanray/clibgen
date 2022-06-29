@@ -1,6 +1,4 @@
 #!/bin/sh
-# Copyright 2019 the Deno authors. All rights reserved. MIT license.
-# TODO(everyone): Keep this script simple and easily auditable.
 
 set -e
 
@@ -13,34 +11,35 @@ if [ "$OS" = "Windows_NT" ]; then
 	target="Windows_x86_64"
 else
 	case $(uname -sm) in
-	"Darwin x86_64") target="Darwin_x86_64" ;;
-	"Darwin arm64") target="Darwin_arm64" ;;
+	"Darwin x86_64") target="Darwin-x86_64" ;;
+	"Darwin arm64") target="Darwin-arm64" ;;
 	*) target="Linux_x86_64" ;;
 	esac
 fi
 
 if [ $# -eq 0 ]; then
-	clibgen_uri="https://github.com/laureanray/clibgen/releases/latest/download/clibgen_${target}.zip"
+	clibgen_uri="https://github.com/laureanray/clibgen/releases/latest/download/clibgen_${target}.tar.gz"
 else
-	clibgen_uri="https://github.com/laureanray/clibgen/releases/download/${1}/clibgen_${target}.zip"
+	clibgen_uri="https://github.com/laureanray/clibgen/releases/download/${1}/clibgen_${target}.tar.gz"
 fi
 
 clibgen_install="${CLIBGEN_INSTALL:-$HOME/.clibgen}"
 bin_dir="$clibgen_install/bin"
-exe="$bin_dir/deno"
+exe="$bin_dir/clibgen"
 
 if [ ! -d "$bin_dir" ]; then
 	mkdir -p "$bin_dir"
 fi
 
 echo "$clibgen_uri"
-curl --fail --location --progress-bar --output "$exe.zip" "$clibgen_uri"
-unzip -d "$bin_dir" -o "$exe.zip"
+curl --fail --location --progress-bar --output "$exe.tar.gz" "$clibgen_uri"
+tar -xf "$exe.tar.gz" -C "$bin_dir"
 chmod +x "$exe"
-rm "$exe.zip"
+# Clean up
+rm "$exe.tar.gz"
 
 echo "Clibgen was installed successfully to $exe"
-if command -v deno >/dev/null; then
+if command -v clibgen >/dev/null; then
 	echo "Run 'clibgen --help' to get started"
 else
 	case $SHELL in
