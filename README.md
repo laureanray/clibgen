@@ -2,6 +2,7 @@
 
 clibgen is a TUI for library genesis. (https://libgen.li, https://libgen.is)
 
+![ezgif-3-2ec26c641b](https://user-images.githubusercontent.com/22195710/176466306-0dd493dd-5a3b-494a-96c5-e2380b830275.gif)
 
 ### Install
 
