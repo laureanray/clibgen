@@ -40,7 +40,7 @@ rm "$exe.tar.gz"
 
 echo "Clibgen was installed successfully to $exe"
 if command -v clibgen >/dev/null; then
-	echo "Run 'clibgen --help' to get started"
+	echo "Run 'clibgen --help' to get started. Happy reading!"
 else
 	case $SHELL in
 	/bin/zsh) shell_profile=".zshrc" ;;
