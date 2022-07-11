@@ -267,5 +267,5 @@ func DownloadSelection(selectedBook Book, libgenType MirrorType) {
 	)
 	io.Copy(io.MultiWriter(f, bar), resp.Body)
 
-	log.Println("File downloaded:", f.Name())
+	log.Println("File successfully downloaded:", f.Name())
 }
