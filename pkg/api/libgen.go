@@ -22,11 +22,11 @@ Currently there are three libgen domains:
 These domains might change in the future
 */
 
-type MirrorType int32
+type Site int32
 
 const (
-	LibgenOld MirrorType = 0
-	LibgenNew MirrorType = 1
+	LibgenOld Site = 0
+	LibgenNew Site = 1
 )
 
 // Note: Applicable only for libgen.is! (We might need to implemented something like this for libgen.li)
@@ -136,8 +136,8 @@ func getBookDataFromDocumentNew(document *goquery.Document) []Book {
 }
 
 // Parse HTML and get the data from the table by parsing and iterating through them.
-func getBookDataFromDocument(document *goquery.Document, libgenMirrorType MirrorType) []Book {
-	switch libgenMirrorType {
+func getBookDataFromDocument(document *goquery.Document, libgenSite Site) []Book {
+	switch libgenSite {
 	case LibgenOld:
 		return getBookDataFromDocumentOld(document)
 	case LibgenNew:
@@ -154,7 +154,7 @@ func getLinkFromDocumentNew(document *goquery.Document) (string, bool) {
 	return document.Find("#main a").First().Attr("href")
 }
 
-func getDirectDownloadLink(link string, libgenType MirrorType) string {
+func getDirectDownloadLink(link string, libgenType Site) string {
 	log.Println("Obtaining direct download link")
 
 	resp, err := http.Get(link)
@@ -203,11 +203,11 @@ func getDirectDownloadLink(link string, libgenType MirrorType) string {
 	return ""
 }
 
-func SearchBookByTitle(query string, limit int, libgenMirrorType MirrorType) ([]Book, error) {
+func SearchBookByTitle(query string, limit int, libgenSite Site) ([]Book, error) {
 	log.Println("Searching for:", query)
 	var e error
 	var baseUrl string
-	switch libgenMirrorType {
+	switch libgenSite {
 	case LibgenOld:
 		baseUrl = "https://libgen.is/search.php"
 	case LibgenNew:
@@ -237,7 +237,7 @@ func SearchBookByTitle(query string, limit int, libgenMirrorType MirrorType) ([]
 		e = err
 	}
 
-	books := getBookDataFromDocument(document, libgenMirrorType)
+	books := getBookDataFromDocument(document, libgenSite)
 
 	if len(books) >= limit {
 		books = books[:limit]
@@ -247,14 +247,14 @@ func SearchBookByTitle(query string, limit int, libgenMirrorType MirrorType) ([]
 }
 
 // DownloadSelection Downloads the file to current working directory
-func DownloadSelection(selectedBook Book, libgenType MirrorType) {
+func DownloadSelection(selectedBook Book, libgenType Site) {
 	log.Println("Initializing download")
 	link := getDirectDownloadLink(selectedBook.Mirrors[0], libgenType)
 	req, _ := http.NewRequest("GET", link, nil)
 	resp, error := http.DefaultClient.Do(req)
 
 	if error != nil {
-		log.Fatal("Failed to download! Please try other mirror")
+		log.Fatal("Failed to download! Please try the other site")
 	}
 
 	defer resp.Body.Close()

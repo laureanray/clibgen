@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	selectedMirror  string
+	selectedSite    string
 	numberOfResults = 10
 
 	searchCmd = &cobra.Command{
@@ -26,9 +26,9 @@ var (
 
 			var libgenType = api.LibgenNew
 
-			if selectedMirror == "old" {
+			if selectedSite == "old" {
 				libgenType = api.LibgenOld
-			} else if selectedMirror == "new" {
+			} else if selectedSite == "new" {
 				libgenType = api.LibgenNew
 			}
 
@@ -68,7 +68,7 @@ var (
 func init() {
 	searchCmd.
 		PersistentFlags().
-		StringVarP(&selectedMirror, "mirror", "m", "old", `select which mirror to use
+		StringVarP(&selectedSite, "site", "s", "old", `select which site to use
 		options: 
 			"old" -> libgen.is
 			"new" -> liggen.li 

@@ -22,7 +22,7 @@ clibgen search "Eloquent JavaScript"
 ```
 
 Search for a book using the newer website (useful if for some reason the old website is down or the mirrors are not working)
-`-m or -mirror` flag
+`-s or -site` flag
 ```shell
 clibgen search -m "new" "Eloquent JavaScript"
 ```
