@@ -2,15 +2,16 @@ package api
 
 import (
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
-	"github.com/kennygrant/sanitize"
-	"github.com/schollz/progressbar/v3"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
+	"github.com/kennygrant/sanitize"
+	"github.com/schollz/progressbar/v3"
 )
 
 /*
