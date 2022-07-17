@@ -12,7 +12,15 @@ Shell Installation (Mac, Linux)
 curl -fsSL https://raw.githubusercontent.com/laureanray/clibgen/main/install.sh | sh
 ```
 
-PowerShell Installation (Work in progress)
+PowerShell Installation (Windows)
+```powershell
+iwr https://raw.githubusercontent.com/laureanray/clibgen/main/install.sh -useb | iex
+```
+
+Manual Installation (Binaries)
+- Download the file for your platform and version you need in the [releases page](https://github.com/laureanray/clibgen/releases) 
+- Extract to where you store your binaries
+- Add the binaries directory to your PATH
 
 ### Usage 
 
