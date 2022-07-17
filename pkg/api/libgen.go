@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/kennygrant/sanitize"
 	"github.com/schollz/progressbar/v3"
 	"io"
 	"log"
@@ -248,8 +249,8 @@ func SearchBookByTitle(query string, limit int, libgenSite Site) ([]Book, error)
 
 // DownloadSelection Downloads the file to current working directory
 func DownloadSelection(selectedBook Book, libgenType Site) {
-	log.Println("Initializing download")
 	link := getDirectDownloadLink(selectedBook.Mirrors[0], libgenType)
+	log.Println("Initializing download " + link)
 	req, _ := http.NewRequest("GET", link, nil)
 	resp, error := http.DefaultClient.Do(req)
 
@@ -258,14 +259,21 @@ func DownloadSelection(selectedBook Book, libgenType Site) {
 	}
 
 	defer resp.Body.Close()
-	f, _ := os.OpenFile(strings.Trim(selectedBook.Title, " ")+"."+selectedBook.Extension, os.O_CREATE|os.O_WRONLY, 0644)
+	filename := sanitize.Path(strings.Trim(selectedBook.Title, " ") + "." + selectedBook.Extension)
+
+	f, _ := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666)
 	defer f.Close()
 
 	bar := progressbar.DefaultBytes(
 		resp.ContentLength,
 		"Downloading",
 	)
-	io.Copy(io.MultiWriter(f, bar), resp.Body)
 
-	log.Println("File successfully downloaded:", f.Name())
+	bytes, err := io.Copy(io.MultiWriter(f, bar), resp.Body)
+
+	if bytes == 0 || err != nil {
+		log.Println(bytes, err)
+	} else {
+		log.Println("File successfully downloaded:", f.Name())
+	}
 }
