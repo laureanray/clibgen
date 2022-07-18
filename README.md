@@ -14,7 +14,7 @@ curl -fsSL https://raw.githubusercontent.com/laureanray/clibgen/main/install.sh 
 
 PowerShell Installation (Windows)
 ```powershell
-iwr https://raw.githubusercontent.com/laureanray/clibgen/main/install.sh -useb | iex
+iwr https://raw.githubusercontent.com/laureanray/clibgen/main/install.ps1 -useb | iex
 ```
 
 Manual Installation (Binaries)
