@@ -5,6 +5,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/fatih/color"
 	"github.com/laureanray/clibgen/pkg/api"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
@@ -15,6 +16,21 @@ func truncateText(s string, max int) string {
 		return s
 	}
 	return s[:strings.LastIndex(s[:max], " ")] + " ..."
+}
+
+func getExtension(s string) string {
+	cyan := color.New(color.FgHiCyan).SprintFunc()
+	magenta := color.New(color.FgHiMagenta).SprintFunc()
+	blue := color.New(color.FgHiBlue).SprintFunc()
+
+	switch s {
+	case "pdf":
+		return cyan(s)
+	case "epub":
+		return magenta(s)
+	default:
+		return blue(s)
+	}
 }
 
 var (
@@ -55,7 +71,8 @@ var (
 			for _, book := range books {
 				parsedTitle := truncateText(book.Title, 42)
 				parsedAuthor := truncateText(book.Author, 24)
-				titles = append(titles, fmt.Sprintf("[%5s %4s] %-45s %s", book.FileSize, book.Extension, parsedTitle, parsedAuthor))
+				parsedExt := getExtension(fmt.Sprintf("%-4s", book.Extension))
+				titles = append(titles, fmt.Sprintf("%s %-6s | %-45s %s", parsedExt, book.FileSize, parsedTitle, parsedAuthor))
 			}
 
 			prompt := promptui.Select{
