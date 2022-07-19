@@ -3,11 +3,19 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/laureanray/clibgen/pkg/api"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 )
+
+func truncateText(s string, max int) string {
+	if max > len(s) {
+		return s
+	}
+	return s[:strings.LastIndex(s[:max], " ")] + " ..."
+}
 
 var (
 	selectedSite    string
@@ -45,7 +53,9 @@ var (
 			var titles []string
 
 			for _, book := range books {
-				titles = append(titles, fmt.Sprintf("[%s] [%s] %s (%s)", book.FileSize, book.Extension, book.Title, book.Author))
+				parsedTitle := truncateText(book.Title, 42)
+				parsedAuthor := truncateText(book.Author, 24)
+				titles = append(titles, fmt.Sprintf("[%5s %4s] %-45s %s", book.FileSize, book.Extension, parsedTitle, parsedAuthor))
 			}
 
 			prompt := promptui.Select{
