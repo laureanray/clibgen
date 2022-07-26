@@ -36,7 +36,7 @@ Search for a book using the newer website (useful if for some reason the old web
 `-s or -site` flag
 
 ```shell
-clibgen search -m "new" "Eloquent JavaScript"
+clibgen search -s "new" "Eloquent JavaScript"
 ```
 
 Limit search results (default: 10)
