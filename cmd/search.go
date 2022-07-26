@@ -56,7 +56,7 @@ var (
 				libgenType = api.LibgenNew
 			}
 
-			books, err := api.SearchBookByTitle(args[0], numberOfResults, libgenType)
+			books, siteUsed, err := api.SearchBookByTitle(args[0], numberOfResults, libgenType)
 			if err != nil {
 				log.Fatalln(err)
 			}
@@ -87,7 +87,7 @@ var (
 				return
 			}
 
-			api.DownloadSelection(books[resultInt], libgenType)
+			api.DownloadSelection(books[resultInt], siteUsed)
 		},
 	}
 )
