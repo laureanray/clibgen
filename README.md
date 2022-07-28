@@ -4,7 +4,7 @@ clibgen is a TUI for library genesis. (https://libgen.li, https://libgen.is)
 
 ![ezgif com-gif-maker (7)](https://user-images.githubusercontent.com/22195710/180980454-4e0c95b5-1df3-4891-84f0-9b92d0ac12d4.gif)
 
-### Install
+### Installation
 
 Shell Installation (Mac, Linux)
 
