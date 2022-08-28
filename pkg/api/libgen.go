@@ -9,14 +9,15 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/fatih/color"
 	"github.com/kennygrant/sanitize"
+	"github.com/laureanray/clibgen/pkg/utils"
 	"github.com/schollz/progressbar/v3"
 )
 
 /*
 
-Currently there are three libgen domains:
+Currently there are multiple libgen domains for now
+  we support the ff:
 
  - libgen.is -> primary domain (old interface)
  - libgen.li -> secondary (fallback) newer interface
@@ -25,11 +26,19 @@ These domains might change in the future
 */
 
 type Site int32
+type Type int
 
 const (
-	LibgenOld Site = 0
-	LibgenNew Site = 1
+	LibgenIs Site = 0
+	LibgenLi Site = 1
 )
+
+const ()
+
+type Clibgen struct {
+	selected int
+	site     Site
+}
 
 // Note: Applicable only for libgen.is! (We might need to implemented something like this for libgen.li)
 // Get book title from the selection, in most cases the title is hidden through nested anchor tags.
@@ -140,9 +149,9 @@ func getBookDataFromDocumentNew(document *goquery.Document) []Book {
 // Parse HTML and get the data from the table by parsing and iterating through them.
 func getBookDataFromDocument(document *goquery.Document, libgenSite Site) []Book {
 	switch libgenSite {
-	case LibgenOld:
+	case LibgenIs:
 		return getBookDataFromDocumentOld(document)
-	case LibgenNew:
+	case LibgenLi:
 		return getBookDataFromDocumentNew(document)
 	}
 	return []Book{}
@@ -197,32 +206,12 @@ func getDirectDownloadLink(link string, libgenType Site) string {
 	}
 
 	if exists {
-		fmt.Println(successColor("Direct download link found"))
+		fmt.Println(text.Success("Direct download link found"))
 		return directDownloadLink
 	}
 
-	fmt.Println(errorColor("Direct download link not found"))
+	fmt.Println(text.Error("Direct download link not found"))
 	return ""
-}
-
-func highlight(s string) string {
-	magenta := color.New(color.FgHiWhite).Add(color.BgBlack).SprintFunc()
-	return magenta(s)
-}
-
-func errorColor(s string) string {
-	red := color.New(color.FgRed).SprintFunc()
-	return red(s)
-}
-
-func infoColor(s string) string {
-	yellow := color.New(color.FgYellow).SprintFunc()
-	return yellow(s)
-}
-
-func successColor(s string) string {
-	green := color.New(color.FgHiGreen).SprintFunc()
-	return green(s)
 }
 
 func searchLibgen(query string, libgenSite Site) (document *goquery.Document, e error) {
@@ -260,12 +249,12 @@ func searchLibgen(query string, libgenSite Site) (document *goquery.Document, e 
 }
 
 func SearchBookByTitle(query string, limit int, libgenSite Site) (bookResults []Book, siteToUse Site, e error) {
-	fmt.Println("Searching for:", highlight(query))
+	fmt.Println("Searching for:", text.Highlight(query))
 	var document *goquery.Document
 	document, e = searchLibgen(query, siteToUse)
 
 	if e != nil {
-		fmt.Println(errorColor("Error searching for book: " + query))
+		fmt.Println(text.Error("Error searching for book: " + query))
 		failedSite := libgenSite
 		if failedSite == LibgenOld {
 			siteToUse = LibgenNew
@@ -273,10 +262,10 @@ func SearchBookByTitle(query string, limit int, libgenSite Site) (bookResults []
 			siteToUse = LibgenOld
 		}
 
-		fmt.Println(infoColor("Retrying with other site"))
+		fmt.Println(text.Info("Retrying with other site"))
 		document, e = searchLibgen(query, siteToUse) // If this also fails then we have a problem
 	}
-	fmt.Println(successColor("Search complete, parsing the document..."))
+	fmt.Println(text.Success("Search complete, parsing the document..."))
 
 	bookResults = getBookDataFromDocument(document, siteToUse)
 
@@ -290,12 +279,12 @@ func SearchBookByTitle(query string, limit int, libgenSite Site) (bookResults []
 // DownloadSelection Downloads the file to current working directory
 func DownloadSelection(selectedBook Book, libgenType Site) {
 	link := getDirectDownloadLink(selectedBook.Mirrors[0], libgenType)
-	fmt.Println(infoColor("Initializing download "))
+	fmt.Println(text.Info("Initializing download "))
 	req, _ := http.NewRequest("GET", link, nil)
 	resp, error := http.DefaultClient.Do(req)
 
 	if error != nil {
-		fmt.Println(errorColor("Error downloading file: " + error.Error()))
+		fmt.Println(text.Error("Error downloading file: " + error.Error()))
 	}
 
 	defer resp.Body.Close()
@@ -314,6 +303,6 @@ func DownloadSelection(selectedBook Book, libgenType Site) {
 	if bytes == 0 || err != nil {
 		fmt.Println(bytes, err)
 	} else {
-		fmt.Println(successColor("File successfully downloaded:"), f.Name())
+		fmt.Println(text.Success("File successfully downloaded:"), f.Name())
 	}
 }
