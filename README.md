@@ -32,7 +32,7 @@ Search for a book using old the old website (default)
 clibgen search "Eloquent JavaScript"
 ```
 
-Search for a book using the newer website (useful if for some reason the old website is down or the mirrors are not working)
+Search for a book using the newer website (this is useful if for some reason the old website is down or the mirrors are not working)
 `-s or -site` flag
 
 ```shell
