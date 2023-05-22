@@ -149,7 +149,7 @@ func getBookDataFromDocument(document *goquery.Document, libgenSite Site) []Book
 }
 
 func getLinkFromDocumentOld(document *goquery.Document) (string, bool) {
-	return document.Find("#download > h2 > a").First().Attr("href")
+	return document.Find("#download > ul > li > a").First().Attr("href")
 }
 
 func getLinkFromDocumentNew(document *goquery.Document) (string, bool) {
