@@ -5,13 +5,14 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
+//	"os"
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/laureanray/clibgen/pkg/downloader"
 	"github.com/fatih/color"
-	"github.com/kennygrant/sanitize"
-	"github.com/schollz/progressbar/v3"
+//	"github.com/kennygrant/sanitize"
+//	"github.com/schollz/progressbar/v3"
 )
 
 /*
@@ -291,29 +292,33 @@ func SearchBookByTitle(query string, limit int, libgenSite Site) (bookResults []
 func DownloadSelection(selectedBook Book, libgenType Site) {
 	link := getDirectDownloadLink(selectedBook.Mirrors[0], libgenType)
 	fmt.Println(infoColor("Initializing download "))
-	req, _ := http.NewRequest("GET", link, nil)
-	resp, error := http.DefaultClient.Do(req)
+	// req, _ := http.NewRequest("GET", link, nil)
+	// resp, error := http.DefaultClient.Do(req)
 
-	if error != nil {
-		fmt.Println(errorColor("Error downloading file: " + error.Error()))
-	}
 
-	defer resp.Body.Close()
-	filename := sanitize.Path(strings.Trim(selectedBook.Title, " ") + "." + selectedBook.Extension)
+  downloader := downloader.New(link)
+  downloader.Do();
 
-	f, _ := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666)
-	defer f.Close()
+	// if error != nil {
+	// 	fmt.Println(errorColor("Error downloading file: " + error.Error()))
+	// }
 
-	bar := progressbar.DefaultBytes(
-		resp.ContentLength,
-		"Downloading",
-	)
+	// defer resp.Body.Close()
+	// filename := sanitize.Path(strings.Trim(selectedBook.Title, " ") + "." + selectedBook.Extension)
 
-	bytes, err := io.Copy(io.MultiWriter(f, bar), resp.Body)
+	// f, _ := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666)
+	// defer f.Close()
 
-	if bytes == 0 || err != nil {
-		fmt.Println(bytes, err)
-	} else {
-		fmt.Println(successColor("File successfully downloaded:"), f.Name())
-	}
+	// bar := progressbar.DefaultBytes(
+	// 	resp.ContentLength,
+	// 	"Downloading",
+	// )
+
+	// bytes, err := io.Copy(io.MultiWriter(f, bar), resp.Body)
+
+	// if bytes == 0 || err != nil {
+	// 	fmt.Println(bytes, err)
+	// } else {
+	// 	fmt.Println(successColor("File successfully downloaded:"), f.Name())
+	// }
 }
