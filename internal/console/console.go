@@ -1,30 +1,32 @@
 package console
 
 import (
+	"fmt"
+
 	"github.com/fatih/color"
 )
 
-func highlight(s string) string {
+func Higlight(format string, a ...any) string {
 	magenta := color.New(color.FgHiWhite).Add(color.BgBlack).SprintFunc()
-	return magenta(s)
+	return magenta(fmt.Sprintf(format, a...))
 }
 
-func errorColor(s string) string {
+func Error(format string, a ...any) string {
 	red := color.New(color.FgRed).SprintFunc()
-	return red(s)
+	return red(fmt.Sprintf(format, a...))
 }
 
-func infoColor(s string) string {
+func Info(format string, a ...any) string {
 	yellow := color.New(color.FgYellow).SprintFunc()
-	return yellow(s)
+	return yellow(fmt.Sprintf(format, a...))
 }
 
-func successColor(s string) string {
+func Success(format string, a ...any) string {
 	green := color.New(color.FgHiGreen).SprintFunc()
-	return green(s)
+	return green(fmt.Sprintf(format, a...))
 }
 
-func white(s string) string {
+func Normal(format string, a ...any) string {
   white := color.New(color.FgWhite).SprintFunc()
-  return white(s)
+  return white(fmt.Sprintf(format, a...))
 }

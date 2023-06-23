@@ -13,7 +13,7 @@ const (
   CLICK = "click"
 )
 
-type Results string
+type Filter string
 const (
   TITLE = "title"
   AUTHOR = "author"

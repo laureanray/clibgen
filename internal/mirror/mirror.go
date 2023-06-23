@@ -2,7 +2,7 @@ package mirror
 
 import (
 	"github.com/laureanray/clibgen/internal/book"
-	"github.com/laureanray/clibgen/internal/domain"
+	"github.com/laureanray/clibgen/internal/libgen"
 )
 
 type Mirror interface {
@@ -18,5 +18,5 @@ type Configuration struct {
 }
 
 type NewMirror struct {
-  domain domain.Domain
+  domain libgen.Domain
 }
