@@ -6,7 +6,8 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/laureanray/clibgen/pkg/api"
+	"github.com/laureanray/clibgen/internal/domain"
+	"github.com/laureanray/clibgen/internal/mirror"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 )
@@ -48,46 +49,51 @@ var (
 				return
 			}
 
-			var libgenType = api.LibgenNew
+      oldMirror := mirror.NewOldMirror(domain.LI);
+  
 
-			if selectedSite == "old" {
-				libgenType = api.LibgenOld
-			} else if selectedSite == "new" {
-				libgenType = api.LibgenNew
-			}
-
-			books, siteUsed, err := api.SearchBookByTitle(args[0], numberOfResults, libgenType)
-			if err != nil {
-				log.Fatalln(err)
-			}
-
-			if err != nil {
-				log.Fatal(err)
-				return
-			}
-
-			var titles []string
-
-			for _, book := range books {
-				parsedTitle := truncateText(book.Title, 42)
-				parsedAuthor := truncateText(book.Author, 24)
-				parsedExt := getExtension(fmt.Sprintf("%-4s", book.Extension))
-				titles = append(titles, fmt.Sprintf("%s %-6s | %-45s %s", parsedExt, book.FileSize, parsedTitle, parsedAuthor))
-			}
-
-			prompt := promptui.Select{
-				Label: "Select Title",
-				Items: titles,
-			}
-
-			resultInt, _, err := prompt.Run()
-
-			if err != nil {
-				fmt.Printf("Prompt failed %v\n", err)
-				return
-			}
-
-			api.DownloadSelection(books[resultInt], siteUsed)
+      oldMirror.Search(args[0])
+			//
+			// var libgenType = api.LibgenNew
+			//
+			// if selectedSite == "old" {
+			// 	libgenType = api.LibgenOld
+			// } else if selectedSite == "new" {
+			// 	libgenType = api.LibgenNew
+			// }
+			//
+			// books, siteUsed, err := api.SearchBookByTitle(args[0], numberOfResults, libgenType)
+			// if err != nil {
+			// 	log.Fatalln(err)
+			// }
+			//
+			// if err != nil {
+			// 	log.Fatal(err)
+			// 	return
+			// }
+			//
+			// var titles []string
+			//
+			// for _, book := range books {
+			// 	parsedTitle := truncateText(book.Title, 42)
+			// 	parsedAuthor := truncateText(book.Author, 24)
+			// 	parsedExt := getExtension(fmt.Sprintf("%-4s", book.Extension))
+			// 	titles = append(titles, fmt.Sprintf("%s %-6s | %-45s %s", parsedExt, book.FileSize, parsedTitle, parsedAuthor))
+			// }
+			//
+			// prompt := promptui.Select{
+			// 	Label: "Select Title",
+			// 	Items: titles,
+			// }
+			//
+			// resultInt, _, err := prompt.Run()
+			//
+			// if err != nil {
+			// 	fmt.Printf("Prompt failed %v\n", err)
+			// 	return
+			// }
+			//
+			// api.DownloadSelection(books[resultInt], siteUsed)
 		},
 	}
 )
