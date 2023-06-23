@@ -1,6 +1,8 @@
 package page
 
 import (
+	"strings"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/laureanray/clibgen/internal/book"
 )
@@ -15,10 +17,9 @@ func New(document *goquery.Document) *Page {
 	return p
 }
 
-
-func (p *Page) GetBookDataFromDocument() ([]book.Book, error) {
-	var books []Book
-	document.Find(".c > tbody > tr").Each(func(resultsRow int, bookRow *goquery.Selection) {
+func (p *Page) GetBookDataFromDocument() []book.Book {
+	var books []book.Book
+	p.doc.Find(".c > tbody > tr").Each(func(resultsRow int, bookRow *goquery.Selection) {
 		var id, author, title, publisher, extension, year, fileSize string
 		var mirrors []string
 		if resultsRow != 0 {
@@ -45,7 +46,7 @@ func (p *Page) GetBookDataFromDocument() ([]book.Book, error) {
 					}
 				}
 			})
-			books = append(books, Book{
+			books = append(books, book.Book{
 				ID:        id,
 				Author:    author,
 				Year:      year,
@@ -57,6 +58,22 @@ func (p *Page) GetBookDataFromDocument() ([]book.Book, error) {
 			})
 		}
 	})
-	return books
 
+	return books
+}
+
+
+func getBookTitleFromSelection(selection *goquery.Selection) string {
+	var title string
+	selection.Find("a").Each(func(v int, s *goquery.Selection) {
+		_, exists := s.Attr("title")
+		if exists {
+			title = s.Text()
+		}
+	})
+	selection.Find("a > font").Each(func(v int, s *goquery.Selection) {
+		a := s.Text()
+		title = strings.ReplaceAll(title, a, "")
+	})
+	return title
 }

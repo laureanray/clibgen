@@ -2,13 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/laureanray/clibgen/internal/domain"
+	"github.com/laureanray/clibgen/internal/libgen"
 	"github.com/laureanray/clibgen/internal/mirror"
-	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 )
 
@@ -49,10 +47,9 @@ var (
 				return
 			}
 
-      oldMirror := mirror.NewOldMirror(domain.LI);
-  
-
-      oldMirror.Search(args[0])
+      oldMirror := mirror.NewOldMirror(libgen.IS);
+      books, _ := oldMirror.SearchByTitle(args[0])
+      fmt.Println(books)
 			//
 			// var libgenType = api.LibgenNew
 			//

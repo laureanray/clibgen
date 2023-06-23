@@ -10,6 +10,7 @@ import (
 	"github.com/laureanray/clibgen/internal/book"
 	"github.com/laureanray/clibgen/internal/console"
 	"github.com/laureanray/clibgen/internal/libgen"
+	"github.com/laureanray/clibgen/internal/page"
 )
 
 type OldMirror struct {
@@ -21,34 +22,38 @@ type OldMirror struct {
 func NewOldMirror(domain libgen.Domain) *OldMirror {
   return &OldMirror{
     domain: domain,
+    // TODO: Make this configurable
+    filter: libgen.TITLE,
     config: Configuration{
-      // TODO: Make this configurable
       numberOfResults: 5,
     },
   }
 }
 
-func (m *OldMirror) SearchByTitle(query string) []book.Book {
+func (m *OldMirror) SearchByTitle(query string) ([]book.Book, error) {
 	fmt.Println("Searching for: ", console.Higlight(query))
 	var document *goquery.Document
 
-	document, err = m.searchSite(query)
+  document, err := m.searchSite(query)
+
+  fmt.Print(document.Text())
 
 	if err != nil {
 		fmt.Println(console.Error("Error searching for book: %s", query))
-    // TODO: Implment retrying
+    // TODO: Implement retrying
 		// fmt.Println(infoColor("Retrying with other site"))
 		// document, e = searchLibgen(query, siteToUse) // If this also fails then we have a problem
 	}
 	fmt.Println(console.Success("Search complete, parsing the document..."))
+  
+  page := page.New(document)
+  bookResults := page.GetBookDataFromDocument()
 
-	bookResults = getBookDataFromDocument(document, siteToUse)
+	// if len(bookResults) >= limit {
+	// 	bookResults = bookResults[:limit]
+	// }
 
-	if len(bookResults) >= limit {
-		bookResults = bookResults[:limit]
-	}
-
-	return bookResults, e
+	return bookResults, err
 }
 
 func highlight(query string) {
@@ -67,6 +72,8 @@ func (m *OldMirror) searchSite(query string) (*goquery.Document, error) {
     url.QueryEscape(query),
     m.filter,
   )
+
+  fmt.Println(console.Info(queryString))
 
 	resp, e := http.Get(queryString)
 
