@@ -1,10 +1,14 @@
 package page
 
 import (
+	"fmt"
+	"io"
 	"strings"
+  "net/http"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/laureanray/clibgen/internal/book"
+	"github.com/laureanray/clibgen/internal/mirror"
 )
 
 type Page struct {
@@ -12,9 +16,12 @@ type Page struct {
 }
 
 func New(document *goquery.Document) *Page {
-	p := &Page{doc: document}
+	return &Page{doc: document}
+}
 
-	return p
+func NewFromReader(r io.Reader) *Page {
+  document, _ := goquery.NewDocumentFromReader(r)
+  return &Page{doc: document}
 }
 
 func (p *Page) GetBookDataFromDocument() []book.Book {
@@ -63,6 +70,16 @@ func (p *Page) GetBookDataFromDocument() []book.Book {
 }
 
 
+func (p *Page) getDownloadLinkFromDocument(m mirror.Mirror) (string, bool){
+  switch m.(type) {
+    case *mirror.OldMirror:
+    return p.doc.Find("#download > ul > li > a").First().Attr("href")
+  }
+
+  return "", false
+}
+
+
 func getBookTitleFromSelection(selection *goquery.Selection) string {
 	var title string
 	selection.Find("a").Each(func(v int, s *goquery.Selection) {
@@ -76,4 +93,31 @@ func getBookTitleFromSelection(selection *goquery.Selection) string {
 		title = strings.ReplaceAll(title, a, "")
 	})
 	return title
+}
+
+
+func (p *Page) GetDirectDownloadLink(mirror mirror.Mirror, link string) string {
+	fmt.Println("Obtaining direct download link")
+	resp, err := http.Get(link)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+
+		if err != nil {
+			fmt.Println("Error closing body:", err)
+		}
+	}(resp.Body)
+
+	if err != nil {
+		fmt.Println("Error getting response:", err)
+	}
+
+  page := NewFromReader(resp.Body)
+  // TODO: I think this can be improved
+  directDownloadLink, exists := page.getDownloadLinkFromDocument(mirror)
+
+  if exists {
+    return directDownloadLink
+  }
+  
+  return ""
 }

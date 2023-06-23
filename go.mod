@@ -28,9 +28,7 @@ require (
 )
 
 replace github.com/laureanray/clibgen/internal/book => ./internal/book
-
 replace github.com/laureanray/clibgen/internal/libgen => ./internal/libgen
-
 replace github.com/laureanray/clibgen/internal/console => ./internal/console
 replace github.com/laureanray/clibgen/internal/mirror => ./internal/mirror
 replace github.com/laureanray/clibgen/internal/page => ./internal/page

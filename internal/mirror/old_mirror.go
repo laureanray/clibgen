@@ -10,7 +10,6 @@ import (
 	"github.com/laureanray/clibgen/internal/book"
 	"github.com/laureanray/clibgen/internal/console"
 	"github.com/laureanray/clibgen/internal/libgen"
-	"github.com/laureanray/clibgen/internal/page"
 )
 
 type OldMirror struct {
@@ -56,9 +55,6 @@ func (m *OldMirror) SearchByTitle(query string) ([]book.Book, error) {
 	return bookResults, err
 }
 
-func highlight(query string) {
-	panic("unimplemented")
-}
 
 // Search the libgen site returns the document 
 // of the search results page
@@ -97,4 +93,3 @@ func (m *OldMirror) searchSite(query string) (*goquery.Document, error) {
 
 	return document, e
 }
-
