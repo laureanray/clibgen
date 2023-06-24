@@ -48,14 +48,13 @@ var (
 				return
 			}
 
-      oldMirror := mirror.NewOldMirror(libgen.IS);
-      books, _ := oldMirror.SearchByTitle(args[0])
-      fmt.Println(books)
+      legacyMirror := mirror.NewLegacyMirror(libgen.IS);
+      books, _ := legacyMirror.SearchByTitle(args[0])
 			//
 			// var libgenType = api.LibgenNew
 			//
-			// if selectedSite == "old" {
-			// 	libgenType = api.LibgenOld
+			// if selectedSite == "legacy" {
+			// 	libgenType = api.LibgenLegacy
 			// } else if selectedSite == "new" {
 			// 	libgenType = api.LibgenNew
 			// }
@@ -90,6 +89,8 @@ var (
 				fmt.Printf("Prompt failed %v\n", err)
 				return
 			}
+
+      println(resultInt)
 			//
 			// api.DownloadSelection(books[resultInt], siteUsed)
 		},
@@ -99,9 +100,9 @@ var (
 func init() {
 	searchCmd.
 		PersistentFlags().
-		StringVarP(&selectedSite, "site", "s", "old", `select which site to use
+		StringVarP(&selectedSite, "site", "s", "legacy", `select which site to use
 		options: 
-			"old" -> libgen.is
+			"legacy" -> libgen.is
 			"new" -> liggen.li 
 	`)
 

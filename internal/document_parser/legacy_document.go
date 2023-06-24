@@ -1,32 +1,31 @@
-package page
+package documentparser
 
 import (
 	"fmt"
 	"io"
+	"net/http"
 	"strings"
-  "net/http"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/laureanray/clibgen/internal/book"
-	"github.com/laureanray/clibgen/internal/mirror"
 )
 
-type Page struct {
-	doc *goquery.Document
+type LegacyDocumentParser struct {
+  doc *goquery.Document
 }
 
-func New(document *goquery.Document) *Page {
-	return &Page{doc: document}
+func NewLegacyDocumentParser(document *goquery.Document) *LegacyDocumentParser {
+	return &LegacyDocumentParser{doc: document}
 }
 
-func NewFromReader(r io.Reader) *Page {
+func NewLegacyDocumentParserFromReader(r io.Reader) *LegacyDocumentParser {
   document, _ := goquery.NewDocumentFromReader(r)
-  return &Page{doc: document}
+  return &LegacyDocumentParser{doc: document}
 }
 
-func (p *Page) GetBookDataFromDocument() []book.Book {
+func (ldp *LegacyDocumentParser) GetBookDataFromDocument() []book.Book {
 	var books []book.Book
-	p.doc.Find(".c > tbody > tr").Each(func(resultsRow int, bookRow *goquery.Selection) {
+	ldp.doc.Find(".c > tbody > tr").Each(func(resultsRow int, bookRow *goquery.Selection) {
 		var id, author, title, publisher, extension, year, fileSize string
 		var mirrors []string
 		if resultsRow != 0 {
@@ -70,13 +69,8 @@ func (p *Page) GetBookDataFromDocument() []book.Book {
 }
 
 
-func (p *Page) getDownloadLinkFromDocument(m mirror.Mirror) (string, bool){
-  switch m.(type) {
-    case *mirror.OldMirror:
-    return p.doc.Find("#download > ul > li > a").First().Attr("href")
-  }
-
-  return "", false
+func (ldp *LegacyDocumentParser) getDownloadLinkFromDocument() (string, bool){
+  return ldp.doc.Find("#download > ul > li > a").First().Attr("href")
 }
 
 
@@ -96,7 +90,7 @@ func getBookTitleFromSelection(selection *goquery.Selection) string {
 }
 
 
-func (p *Page) GetDirectDownloadLink(mirror mirror.Mirror, link string) string {
+func (ldp *LegacyDocumentParser) GetDirectDownloadLink(link string) string {
 	fmt.Println("Obtaining direct download link")
 	resp, err := http.Get(link)
 	defer func(Body io.ReadCloser) {
@@ -111,9 +105,9 @@ func (p *Page) GetDirectDownloadLink(mirror mirror.Mirror, link string) string {
 		fmt.Println("Error getting response:", err)
 	}
 
-  page := NewFromReader(resp.Body)
+  page := NewLegacyDocumentParserFromReader(resp.Body)
   // TODO: I think this can be improved
-  directDownloadLink, exists := page.getDownloadLinkFromDocument(mirror)
+  directDownloadLink, exists := page.getDownloadLinkFromDocument()
 
   if exists {
     return directDownloadLink

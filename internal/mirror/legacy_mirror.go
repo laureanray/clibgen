@@ -9,17 +9,18 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/laureanray/clibgen/internal/book"
 	"github.com/laureanray/clibgen/internal/console"
+	"github.com/laureanray/clibgen/internal/document_parser"
 	"github.com/laureanray/clibgen/internal/libgen"
 )
 
-type OldMirror struct {
+type LegacyMirror struct {
   domain libgen.Domain
   filter libgen.Filter
   config Configuration
 }
 
-func NewOldMirror(domain libgen.Domain) *OldMirror {
-  return &OldMirror{
+func NewLegacyMirror(domain libgen.Domain) *LegacyMirror {
+  return &LegacyMirror{
     domain: domain,
     // TODO: Make this configurable
     filter: libgen.TITLE,
@@ -29,13 +30,11 @@ func NewOldMirror(domain libgen.Domain) *OldMirror {
   }
 }
 
-func (m *OldMirror) SearchByTitle(query string) ([]book.Book, error) {
+func (m *LegacyMirror) SearchByTitle(query string) ([]book.Book, error) {
 	fmt.Println("Searching for: ", console.Higlight(query))
 	var document *goquery.Document
 
   document, err := m.searchSite(query)
-
-  fmt.Print(document.Text())
 
 	if err != nil {
 		fmt.Println(console.Error("Error searching for book: %s", query))
@@ -45,7 +44,7 @@ func (m *OldMirror) SearchByTitle(query string) ([]book.Book, error) {
 	}
 	fmt.Println(console.Success("Search complete, parsing the document..."))
   
-  page := page.New(document)
+  page := documentparser.NewLegacyDocumentParser(document)
   bookResults := page.GetBookDataFromDocument()
 
 	// if len(bookResults) >= limit {
@@ -58,7 +57,7 @@ func (m *OldMirror) SearchByTitle(query string) ([]book.Book, error) {
 
 // Search the libgen site returns the document 
 // of the search results page
-func (m *OldMirror) searchSite(query string) (*goquery.Document, error) {
+func (m *LegacyMirror) searchSite(query string) (*goquery.Document, error) {
 
   baseUrl := fmt.Sprintf("https://libgen.%s/search.php", m.domain)
 

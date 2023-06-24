@@ -1,10 +1,6 @@
 package mirror
 
 import (
-	"fmt"
-	"io"
-	"net/http"
-
 	"github.com/laureanray/clibgen/internal/book"
 	"github.com/laureanray/clibgen/internal/libgen"
 )
