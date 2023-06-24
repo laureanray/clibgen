@@ -1,4 +1,4 @@
-package api
+package book
 
 type Book struct {
 	ID        string

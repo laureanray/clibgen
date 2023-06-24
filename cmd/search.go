@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/laureanray/clibgen/pkg/api"
+	"github.com/laureanray/clibgen/internal/libgen"
+	"github.com/laureanray/clibgen/internal/mirror"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 )
@@ -48,46 +48,45 @@ var (
 				return
 			}
 
-			var libgenType = api.LibgenNew
+      var m mirror.Mirror
 
-			if selectedSite == "old" {
-				libgenType = api.LibgenOld
+			if selectedSite == "legacy" {
+        m = mirror.NewLegacyMirror(libgen.IS)
 			} else if selectedSite == "new" {
-				libgenType = api.LibgenNew
-			}
+        m = mirror.NewCurrentMirror(libgen.LC)
+			} else{
+        // TODO: Improve this.
+        fmt.Print("Not an option");
+        return
+      }
 
-			books, siteUsed, err := api.SearchBookByTitle(args[0], numberOfResults, libgenType)
-			if err != nil {
-				log.Fatalln(err)
-			}
-
-			if err != nil {
-				log.Fatal(err)
-				return
-			}
+      
+      books, _ := m.SearchByTitle(args[0])
 
 			var titles []string
-
+			
 			for _, book := range books {
 				parsedTitle := truncateText(book.Title, 42)
 				parsedAuthor := truncateText(book.Author, 24)
 				parsedExt := getExtension(fmt.Sprintf("%-4s", book.Extension))
 				titles = append(titles, fmt.Sprintf("%s %-6s | %-45s %s", parsedExt, book.FileSize, parsedTitle, parsedAuthor))
 			}
-
+			
 			prompt := promptui.Select{
 				Label: "Select Title",
 				Items: titles,
 			}
-
+			
 			resultInt, _, err := prompt.Run()
-
+			
 			if err != nil {
 				fmt.Printf("Prompt failed %v\n", err)
 				return
 			}
 
-			api.DownloadSelection(books[resultInt], siteUsed)
+      println(resultInt)
+
+      m.DownloadSelection(books[resultInt])
 		},
 	}
 )
@@ -95,10 +94,10 @@ var (
 func init() {
 	searchCmd.
 		PersistentFlags().
-		StringVarP(&selectedSite, "site", "s", "old", `select which site to use
+		StringVarP(&selectedSite, "site", "s", "legacy", `select which site to use
 		options: 
-			"old" -> libgen.is
-			"new" -> liggen.li 
+			"legacy" 
+			"new"
 	`)
 
 	searchCmd.
