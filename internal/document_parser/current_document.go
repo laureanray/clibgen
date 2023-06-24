@@ -23,6 +23,20 @@ func NewCurrentDocumentParserFromReader(r io.Reader) *CurrentDocumentParser {
 	return &CurrentDocumentParser{doc: document}
 }
 
+func findTitle(selection *goquery.Selection) string {
+  var title string
+  selection.Find("a").EachWithBreak(func(v int, s *goquery.Selection) bool {
+    if  s.Text() != "" && len(s.Text()) > 1 {
+      title = s.Text()
+      // Break out of the loop
+      return false
+    }
+    return true
+  })
+
+  return title
+}
+
 func (cdp *CurrentDocumentParser) GetBookDataFromDocument() []book.Book {
 	var books []book.Book
 	cdp.doc.Find("#tablelibgen > tbody > tr").Each(func(resultsRow int, bookRow *goquery.Selection) {
@@ -32,7 +46,7 @@ func (cdp *CurrentDocumentParser) GetBookDataFromDocument() []book.Book {
 			bookRow.Find("td").Each(func(column int, columnSelection *goquery.Selection) {
 				switch column {
 				case 0:
-					title = columnSelection.Find("a").First().Text()
+					title = findTitle(columnSelection)
 				case 1:
 					author = columnSelection.Text()
 				case 2:

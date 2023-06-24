@@ -63,15 +63,16 @@ func (m *CurrentMirror) searchSite(query string) (*goquery.Document, error) {
   baseUrl := fmt.Sprintf("https://libgen.%s/index.php", m.domain)
 
 	queryString := fmt.Sprintf(
-    "%s?req=%s&res=25&view=simple&phrase=1&column=%s",
+    "%s?req=%s",
     baseUrl,
     url.QueryEscape(query),
-    m.filter,
   )
 
-  fmt.Println(console.Info(queryString))
+  reqString:= queryString + "&columns%5B%5D=t&columns%5B%5D=a&columns%5B%5D=s&columns%5B%5D=y&columns%5B%5D=p&columns%5B%5D=i&objects%5B%5D=f&objects%5B%5D=e&objects%5B%5D=s&objects%5B%5D=a&objects%5B%5D=p&objects%5B%5D=w&topics%5B%5D=l&topics%5B%5D=f&topics%5B%5D=r&res=25&filesuns=all"
 
-	resp, e := http.Get(queryString)
+  fmt.Println(reqString)
+
+	resp, e := http.Get(reqString)
 
 	if e != nil {
 		return nil, e
