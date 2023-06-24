@@ -26,11 +26,3 @@ require (
 	golang.org/x/sys v0.0.0-20220128215802-99c3d69c2c27 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 )
-
-replace github.com/laureanray/clibgen/internal/book => ./internal/book
-replace github.com/laureanray/clibgen/internal/libgen => ./internal/libgen
-replace github.com/laureanray/clibgen/internal/console => ./internal/console
-replace github.com/laureanray/clibgen/internal/mirror => ./internal/mirror
-replace github.com/laureanray/clibgen/internal/page => ./internal/page
-replace github.com/laureanray/clibgen/internal/downloader => ./internal/downloader
-
