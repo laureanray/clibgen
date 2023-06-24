@@ -6,6 +6,8 @@ import (
 	"github.com/fatih/color"
 )
 
+// TODO: Refactor this to just print directly instead
+// of doing fmt.Println(console.Hihlight()) and so on...
 func Higlight(format string, a ...any) string {
 	magenta := color.New(color.FgHiWhite).Add(color.BgBlack).SprintFunc()
 	return magenta(fmt.Sprintf(format, a...))

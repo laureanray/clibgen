@@ -48,7 +48,7 @@ func (ldp *LegacyDocumentParser) GetBookDataFromDocument() []book.Book {
 				case 9, 10, 11:
 					href, hrefExists := columnSelection.Find("a").Attr("href")
 					if hrefExists {
-						mirrors = append(mirrors, href)
+						mirrors = append(mirrors, href) 
 					}
 				}
 			})
@@ -90,7 +90,7 @@ func getBookTitleFromSelection(selection *goquery.Selection) string {
 }
 
 
-func (ldp *LegacyDocumentParser) GetDirectDownloadLink(link string) string {
+func GetDirectDownloadLinkFromLegacy(link string) string {
 	fmt.Println("Obtaining direct download link")
 	resp, err := http.Get(link)
 	defer func(Body io.ReadCloser) {
@@ -115,3 +115,5 @@ func (ldp *LegacyDocumentParser) GetDirectDownloadLink(link string) string {
   
   return ""
 }
+
+

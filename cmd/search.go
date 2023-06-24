@@ -54,9 +54,9 @@ var (
 			// var libgenType = api.LibgenNew
 			//
 			if selectedSite == "legacy" {
-        m = mirror.NewLegacyMirror(libgen.IS);
+        m = mirror.NewLegacyMirror(libgen.IS)
 			} else if selectedSite == "new" {
-        m = mirror.
+        // m = mirror.NewCurrentMirror(libgen.LC)
 			}
 
       
@@ -94,8 +94,8 @@ var (
 			}
 
       println(resultInt)
-			//
-			// api.DownloadSelection(books[resultInt], siteUsed)
+
+      m.DownloadSelection(books[resultInt])
 		},
 	}
 )

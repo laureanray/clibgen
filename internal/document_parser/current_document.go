@@ -11,7 +11,7 @@ import (
 )
 
 type CurrentDocumentParser struct {
-  doc *goquery.Document
+	doc *goquery.Document
 }
 
 func NewCurrentDocumentParser(document *goquery.Document) *CurrentDocumentParser {
@@ -19,8 +19,8 @@ func NewCurrentDocumentParser(document *goquery.Document) *CurrentDocumentParser
 }
 
 func NewCurrentDocumentParserFromReader(r io.Reader) *CurrentDocumentParser {
-  document, _ := goquery.NewDocumentFromReader(r)
-  return &CurrentDocumentParser{doc: document}
+	document, _ := goquery.NewDocumentFromReader(r)
+	return &CurrentDocumentParser{doc: document}
 }
 
 func (cdp *CurrentDocumentParser) GetBookDataFromDocument() []book.Book {
@@ -67,11 +67,9 @@ func (cdp *CurrentDocumentParser) GetBookDataFromDocument() []book.Book {
 	return books
 }
 
-
-func (ldp *CurrentDocumentParser) getDownloadLinkFromDocument() (string, bool){
-  return ldp.doc.Find("#download > ul > li > a").First().Attr("href")
+func (ldp *CurrentDocumentParser) getDownloadLinkFromDocument() (string, bool) {
+	return ldp.doc.Find("#download > ul > li > a").First().Attr("href")
 }
-
 
 func (cdp *CurrentDocumentParser) getBookTitleFromSelection(selection *goquery.Selection) string {
 	var title string
@@ -88,9 +86,12 @@ func (cdp *CurrentDocumentParser) getBookTitleFromSelection(selection *goquery.S
 	return title
 }
 
-
-func (ldp *CurrentDocumentParser) GetDirectDownloadLink(link string) string {
+func (ldp *CurrentDocumentParser) GetDirectDownloadLink(selectedBook book.Book) string {
 	fmt.Println("Obtaining direct download link")
+
+  // TODO Implement retry?
+  link := selectedBook.Mirrors[0]
+
 	resp, err := http.Get(link)
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
@@ -104,13 +105,12 @@ func (ldp *CurrentDocumentParser) GetDirectDownloadLink(link string) string {
 		fmt.Println("Error getting response:", err)
 	}
 
-  page := NewCurrentDocumentParserFromReader(resp.Body)
-  // TODO: I think this can be improved
-  directDownloadLink, exists := page.getDownloadLinkFromDocument()
+	directDownloadLink, exists :=
+		NewCurrentDocumentParserFromReader(resp.Body).getDownloadLinkFromDocument()
 
-  if exists {
-    return directDownloadLink
-  }
-  
-  return ""
+	if exists {
+		return directDownloadLink
+	}
+
+	return ""
 }
