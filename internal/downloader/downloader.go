@@ -15,11 +15,13 @@ import (
 
 type Downloader struct {
   selectedBook book.Book
+  directLink string
 }
 
-func NewDownloader(selectedBook book.Book) *Downloader {
+func NewDownloader(selectedBook book.Book, directLink string) *Downloader {
   return &Downloader{
     selectedBook: selectedBook,
+    directLink: directLink,
   }
 }
 
@@ -27,7 +29,7 @@ func (d *Downloader) Download() error {
 	fmt.Println(console.Info("Initializing download "))
 
   // TODO: implement retry
-	req, _ := http.NewRequest("GET", d.selectedBook.Mirrors[0], nil)
+	req, _ := http.NewRequest("GET", d.directLink, nil)
 	resp, error := http.DefaultClient.Do(req)
 
 	if error != nil {

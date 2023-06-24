@@ -95,8 +95,6 @@ func (m *LegacyMirror) searchSite(query string) (*goquery.Document, error) {
 
 func (m *LegacyMirror) DownloadSelection(selectedBook book.Book) {
   fmt.Println(console.Info("Downloading book..."))
-  link := documentparser.GetDirectDownloadLinkFromLegacy(selectedBook.Mirrors[0])
-  if link != "" {
-    downloader.NewDownloader(selectedBook).Download()
-  }
+  directLink := documentparser.GetDirectDownloadLinkFromLegacy(selectedBook.Mirrors[0])
+  downloader.NewDownloader(selectedBook, directLink).Download()
 }

@@ -109,6 +109,8 @@ func GetDirectDownloadLinkFromLegacy(link string) string {
   // TODO: I think this can be improved
   directDownloadLink, exists := page.getDownloadLinkFromDocument()
 
+  fmt.Println("Direct download link:", directDownloadLink)
+
   if exists {
     return directDownloadLink
   }
