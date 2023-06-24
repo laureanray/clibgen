@@ -10,6 +10,7 @@ import (
 	"github.com/laureanray/clibgen/internal/book"
 	"github.com/laureanray/clibgen/internal/console"
 	"github.com/laureanray/clibgen/internal/document_parser"
+	"github.com/laureanray/clibgen/internal/downloader"
 	"github.com/laureanray/clibgen/internal/libgen"
 )
 
@@ -59,7 +60,7 @@ func (m *CurrentMirror) SearchByTitle(query string) ([]book.Book, error) {
 // of the search results page
 func (m *CurrentMirror) searchSite(query string) (*goquery.Document, error) {
 
-  baseUrl := fmt.Sprintf("https://libgen.%s/search.php", m.domain)
+  baseUrl := fmt.Sprintf("https://libgen.%s/index.php", m.domain)
 
 	queryString := fmt.Sprintf(
     "%s?req=%s&res=25&view=simple&phrase=1&column=%s",
@@ -91,4 +92,10 @@ func (m *CurrentMirror) searchSite(query string) (*goquery.Document, error) {
 	}
 
 	return document, e
+}
+
+func (m *CurrentMirror) DownloadSelection(selectedBook book.Book) {
+  fmt.Println(console.Info("Downloading book..."))
+  directLink := documentparser.GetDirectDownloadLinkFromCurrent(selectedBook.Mirrors[0])
+  downloader.NewDownloader(selectedBook, directLink).Download()
 }

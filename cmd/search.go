@@ -50,28 +50,19 @@ var (
 
       var m mirror.Mirror
 
-			//
-			// var libgenType = api.LibgenNew
-			//
 			if selectedSite == "legacy" {
         m = mirror.NewLegacyMirror(libgen.IS)
 			} else if selectedSite == "new" {
-        // m = mirror.NewCurrentMirror(libgen.LC)
-			}
+        m = mirror.NewCurrentMirror(libgen.LC)
+			} else{
+        // TODO: Improve this.
+        fmt.Print("Not an option");
+        return
+      }
 
       
       books, _ := m.SearchByTitle(args[0])
-			//
-			// books, siteUsed, err := api.SearchBookByTitle(args[0], numberOfResults, libgenType)
-			// if err != nil {
-			// 	log.Fatalln(err)
-			// }
-			//
-			// if err != nil {
-			// 	log.Fatal(err)
-			// 	return
-			// }
-			//
+
 			var titles []string
 			
 			for _, book := range books {

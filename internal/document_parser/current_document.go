@@ -67,8 +67,8 @@ func (cdp *CurrentDocumentParser) GetBookDataFromDocument() []book.Book {
 	return books
 }
 
-func (ldp *CurrentDocumentParser) getDownloadLinkFromDocument() (string, bool) {
-	return ldp.doc.Find("#download > ul > li > a").First().Attr("href")
+func (cdp *CurrentDocumentParser) getDownloadLinkFromDocument() (string, bool) {
+  return cdp.doc.Find("#main a").First().Attr("href")
 }
 
 func (cdp *CurrentDocumentParser) getBookTitleFromSelection(selection *goquery.Selection) string {
@@ -86,7 +86,7 @@ func (cdp *CurrentDocumentParser) getBookTitleFromSelection(selection *goquery.S
 	return title
 }
 
-func (ldp *CurrentDocumentParser) GetDirectDownloadLink(selectedBook book.Book) string {
+func (cdp *CurrentDocumentParser) GetDirectDownloadLink(selectedBook book.Book) string {
 	fmt.Println("Obtaining direct download link")
 
   // TODO Implement retry?

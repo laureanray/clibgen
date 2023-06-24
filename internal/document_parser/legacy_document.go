@@ -118,4 +118,32 @@ func GetDirectDownloadLinkFromLegacy(link string) string {
   return ""
 }
 
+func GetDirectDownloadLinkFromCurrent(link string) string {
+	fmt.Println("Obtaining direct download link")
+	resp, err := http.Get(link)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+
+		if err != nil {
+			fmt.Println("Error closing body:", err)
+		}
+	}(resp.Body)
+
+	if err != nil {
+		fmt.Println("Error getting response:", err)
+	}
+
+  page := NewCurrentDocumentParserFromReader(resp.Body)
+  // TODO: I think this can be improved
+  directDownloadLink, exists := page.getDownloadLinkFromDocument()
+
+  fmt.Println("Direct download link:", directDownloadLink)
+
+  if exists {
+    return directDownloadLink
+  }
+  
+  return ""
+}
+
 
