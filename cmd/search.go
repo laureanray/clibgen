@@ -35,6 +35,7 @@ func getExtension(s string) string {
 
 var (
 	selectedSite    string
+  selectedFilter string
 	numberOfResults = 10
 
 	searchCmd = &cobra.Command{
@@ -99,6 +100,15 @@ func init() {
 			"legacy" 
 			"new"
 	`)
+
+  searchCmd.
+    PersistentFlags().
+    StringVarP(&selectedFilter, "filter", "f", "title", `select which filter to use
+    options:
+      "title"
+      "author"
+      "isbn"
+  `)
 
 	searchCmd.
 		PersistentFlags().

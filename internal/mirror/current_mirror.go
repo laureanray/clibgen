@@ -55,6 +55,10 @@ func (m *CurrentMirror) SearchByTitle(query string) ([]book.Book, error) {
 	return bookResults, err
 }
 
+func (m *CurrentMirror) SearchByAuthor(query string) ([]book.Book, error) {
+  return nil, nil
+}
+
 
 // Search the libgen site returns the document 
 // of the search results page

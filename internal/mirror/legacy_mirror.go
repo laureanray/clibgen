@@ -55,6 +55,26 @@ func (m *LegacyMirror) SearchByTitle(query string) ([]book.Book, error) {
 	return bookResults, err
 }
 
+func (m *LegacyMirror) SearchByAuthor(query string) ([]book.Book, error) {
+  fmt.Println("Searching by author: %s", console.Higlight(query))
+
+  m.filter = libgen.AUTHOR
+  document, err := m.searchSite(query)
+
+  if err != nil {
+    fmt.Println(console.Error("Error searching for book: %s", query))
+  }
+
+  bookResults := 
+    documentparser.NewLegacyDocumentParser(document).GetBookDataFromDocument()
+
+  if len(bookResults) >= m.config.numberOfResults {
+    bookResults = bookResults[:m.config.numberOfResults]
+  }
+
+  return bookResults, err
+}
+
 // Search the libgen site returns the document
 // of the search results page
 func (m *LegacyMirror) searchSite(query string) (*goquery.Document, error) {

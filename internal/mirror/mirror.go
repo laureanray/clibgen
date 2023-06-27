@@ -7,7 +7,7 @@ import (
 
 type Mirror interface {
   SearchByTitle(query string) ([]book.Book, error)
-  // SearchByAuthor(author string) []book.Book
+  SearchByAuthor(author string) ([]book.Book, error)
   // SearchByISBN(isbn string) []book.Book
   // 1GetDownloadLink(book book.Book) string
   DownloadSelection(book book.Book)
