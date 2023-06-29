@@ -20,7 +20,7 @@ $BinDir = if ($ClibgenInstall) {
 
 $ClibgenZip = "$BinDir\clibgen.zip"
 $ClibgenExe = "$BinDir\clibgen.exe"
-$Target = 'Windows-x86_64'
+$Target = 'windows-amd64'
 
 # GitHub requires TLS 1.2
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12

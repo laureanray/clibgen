@@ -8,12 +8,12 @@ if ! command -v tar >/dev/null; then
 fi
 
 if [ "$OS" = "Windows_NT" ]; then
-	target="Windows_x86_64"
+	target="windows-amd64"
 else
 	case $(uname -sm) in
-	"Darwin x86_64") target="Darwin-x86_64" ;;
-	"Darwin arm64") target="Darwin-arm64" ;;
-	*) target="Linux-x86_64" ;;
+	"Darwin x86_64") target="darwin-amd64" ;;
+	"Darwin arm64") target="darwin-arm64" ;;
+	*) target="linux-amd64" ;;
 	esac
 fi
 
