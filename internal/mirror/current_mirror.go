@@ -48,9 +48,9 @@ func (m *CurrentMirror) SearchByTitle(query string) ([]book.Book, error) {
   page := documentparser.NewCurrentDocumentParser(document)
   bookResults := page.GetBookDataFromDocument()
 
-	// if len(bookResults) >= limit {
-	// 	bookResults = bookResults[:limit]
-	// }
+	if len(bookResults) >= m.config.numberOfResults {
+		bookResults = bookResults[:m.config.numberOfResults]
+	}
 
 	return bookResults, err
 }
@@ -73,9 +73,9 @@ func (m *CurrentMirror) SearchByAuthor(query string) ([]book.Book, error) {
   page := documentparser.NewCurrentDocumentParser(document)
   bookResults := page.GetBookDataFromDocument()
 
-	// if len(bookResults) >= limit {
-	// 	bookResults = bookResults[:limit]
-	// }
+	if len(bookResults) >= m.config.numberOfResults {
+		bookResults = bookResults[:m.config.numberOfResults]
+	}
 
 	return bookResults, err
 }
