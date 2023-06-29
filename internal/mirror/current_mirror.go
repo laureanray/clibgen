@@ -56,7 +56,7 @@ func (m *CurrentMirror) SearchByTitle(query string) ([]book.Book, error) {
 }
 
 func (m *CurrentMirror) SearchByAuthor(query string) ([]book.Book, error) {
-	fmt.Println("Searching for: ", console.Higlight(query))
+	fmt.Println("Searching by author: ", console.Higlight(query))
 	var document *goquery.Document
 
   m.filter = libgen.AUTHOR

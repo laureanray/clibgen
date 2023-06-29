@@ -56,7 +56,7 @@ func (m *LegacyMirror) SearchByTitle(query string) ([]book.Book, error) {
 }
 
 func (m *LegacyMirror) SearchByAuthor(query string) ([]book.Book, error) {
-  fmt.Println("Searching by author: %s", console.Higlight(query))
+  fmt.Println("Searching by author: ", console.Higlight(query))
 
   m.filter = libgen.AUTHOR
   document, err := m.searchSite(query)
