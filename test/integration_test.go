@@ -6,10 +6,8 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"os/signal"
 	"path/filepath"
 	"reflect"
-	"syscall"
 	"testing"
 )
 
@@ -43,39 +41,40 @@ func TestMain(m *testing.M) {
 
 func runBinary(args []string) ([]byte, error) {
   cmd := exec.Command(binaryPath, args...)
-  // Set the command's output to the standard output of the current process
-  // cmd.Stdout = os.Stdout
-  // cmd.Stderr = os.Stderr
   cmd.Env = append(os.Environ(), "GOCOVERDIR=.coverdata")
-
-  // Start the command
-  // err := cmd.Start()
-  // if err != nil {
-  //   fmt.Printf("Failed to start command: %s\n", err)
-  //   return nil, err
-  // }
-
-  // Set up a signal channel to listen for interrupts
-  sigChan := make(chan os.Signal, 1)
-  signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
-
-  go func() {
-    // Wait for a signal
-    <-sigChan
-
-    // Send the interrupt signal to the command's process
-    cmd.Process.Signal(os.Interrupt)
-    }()
-
-  // Wait for the command to complete
-  err := cmd.Wait()
-  if err != nil {
-    fmt.Printf("Command failed: %s\n", err)
-  }
   return cmd.CombinedOutput()
 }
 
-func TestCliArgs(t *testing.T) {
+func runBinaryWithFileInput(args []string, bytesToWrite []byte) ([]byte, error) {
+  oldStdin := os.Stdin
+  defer func() { os.Stdin = oldStdin }()
+
+  tmpInputFile, err := ioutil.TempFile("", "")
+
+  defer os.Remove(tmpInputFile.Name())
+
+  if err != nil {
+    fmt.Printf("could not create temp file: %v", err)
+  }
+
+  if _, err := tmpInputFile.Write(bytesToWrite); err != nil {
+    panic(err)
+  }
+
+  if _, err := tmpInputFile.Seek(0, 0); err != nil {
+    panic(err)
+  }
+
+  os.Stdin = tmpInputFile
+
+  fmt.Printf("Executing command: %s", binaryPath)
+
+  cmd := exec.Command(binaryPath, args...)
+  cmd.Env = append(os.Environ(), "GOCOVERDIR=.coverdata")
+  return cmd.CombinedOutput()
+}
+
+func TestStaticCliArgs(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    []string
@@ -83,7 +82,7 @@ func TestCliArgs(t *testing.T) {
 	}{
 		// {"no arguments", []string{}, "no-args.golden"},
     {"help args", []string{"--help"}, "help.golden"},
-    {"search test", []string{"search", "Eloquent JavaScript"}, "eloquent.golden"},
+    // {"search test", []string{"search", "Eloquent JavaScript"}, "eloquent.golden"},
     
 		// {"one argument", []string{"ciao"}, "one-argument.golden"},
 		// {"multiple arguments", []string{"ciao", "hello"}, "multiple-arguments.golden"},
@@ -113,6 +112,46 @@ func TestCliArgs(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestSearch(t *testing.T) {
+	tests := []struct {
+		name    string
+		args    []string
+		fixture string
+    bytesToWrite []byte
+	}{
+		// {"no arguments", []string{}, "no-args.golden"},
+    {"search test", []string{"search \"Eloquent JavaScript\""}, "eloquent.golden", []byte{14, 10}},
+		// {"one argument", []string{"ciao"}, "one-argument.golden"},
+		// {"multiple arguments", []string{"ciao", "hello"}, "multiple-arguments.golden"},
+		// {"shout arg", []string{"--shout", "ciao"}, "shout-arg.golden"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			output, err := runBinaryWithFileInput(tt.args, tt.bytesToWrite)
+
+			if err != nil {
+				t.Fatal(err)
+			}
+
+      fmt.Println(string(output))
+
+			if *update {
+				writeFixture(t, tt.fixture, output)
+			}
+
+			actual := string(output)
+
+			expected := loadFixture(t, tt.fixture)
+
+			if !reflect.DeepEqual(actual, expected) {
+				t.Fatalf("actual = %s, expected = %s", actual, expected)
+			}
+		})
+	}
+
 }
 
 // func TestSearch(t *testing.T) {
