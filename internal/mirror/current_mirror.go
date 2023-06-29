@@ -56,7 +56,28 @@ func (m *CurrentMirror) SearchByTitle(query string) ([]book.Book, error) {
 }
 
 func (m *CurrentMirror) SearchByAuthor(query string) ([]book.Book, error) {
-  return nil, nil
+	fmt.Println("Searching for: ", console.Higlight(query))
+	var document *goquery.Document
+
+  m.filter = libgen.AUTHOR
+  document, err := m.searchSite(query)
+
+	if err != nil {
+		fmt.Println(console.Error("Error searching for book: %s", query))
+    // TODO: Implement retrying
+		// fmt.Println(infoColor("Retrying with other site"))
+		// document, e = searchLibgen(query, siteToUse) // If this also fails then we have a problem
+	}
+	fmt.Println(console.Success("Search complete, parsing the document..."))
+  
+  page := documentparser.NewCurrentDocumentParser(document)
+  bookResults := page.GetBookDataFromDocument()
+
+	// if len(bookResults) >= limit {
+	// 	bookResults = bookResults[:limit]
+	// }
+
+	return bookResults, err
 }
 
 
@@ -67,12 +88,14 @@ func (m *CurrentMirror) searchSite(query string) (*goquery.Document, error) {
   baseUrl := fmt.Sprintf("https://libgen.%s/index.php", m.domain)
 
 	queryString := fmt.Sprintf(
-    "%s?req=%s",
+    "%s?req=\"%s\"",
     baseUrl,
     url.QueryEscape(query),
   )
 
-  reqString:= queryString + "&columns%5B%5D=t&columns%5B%5D=a&columns%5B%5D=s&columns%5B%5D=y&columns%5B%5D=p&columns%5B%5D=i&objects%5B%5D=f&objects%5B%5D=e&objects%5B%5D=s&objects%5B%5D=a&objects%5B%5D=p&objects%5B%5D=w&topics%5B%5D=l&topics%5B%5D=f&topics%5B%5D=r&res=25&filesuns=all"
+  filter := string(string(m.filter)[0])
+
+  reqString:= queryString + "&columns%5B%5D=" + filter + "&objects%5B%5D=f&objects%5B%5D=e&objects%5B%5D=s&objects%5B%5D=a&objects%5B%5D=p&objects%5B%5D=w&topics%5B%5D=l&topics%5B%5D=c&topics%5B%5D=f&res=25&gmode=on&filesuns=all"
 
   fmt.Println(reqString)
 
