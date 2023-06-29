@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/laureanray/clibgen/internal/book"
 	"github.com/laureanray/clibgen/internal/libgen"
 	"github.com/laureanray/clibgen/internal/mirror"
 	"github.com/manifoldco/promptui"
@@ -61,8 +62,14 @@ var (
         return
       }
 
-      
-      books, _ := m.SearchByTitle(args[0])
+      var books []book.Book
+
+      switch (selectedFilter) {
+      case libgen.AUTHOR:
+        books, _ = m.SearchByAuthor(args[0])
+      default:
+        books, _ = m.SearchByTitle(args[0])
+      }
 
 			var titles []string
 			
