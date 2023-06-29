@@ -71,8 +71,12 @@ var (
         books, _ = m.SearchByTitle(args[0])
       }
 
+      if len(books) == 0 {
+        return
+      }
+
 			var titles []string
-			
+
 			for _, book := range books {
 				parsedTitle := truncateText(book.Title, 42)
 				parsedAuthor := truncateText(book.Author, 24)

@@ -1,6 +1,7 @@
 package mirror
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -37,12 +38,11 @@ func (m *CurrentMirror) SearchByTitle(query string) ([]book.Book, error) {
 
   document, err := m.searchSite(query)
 
-	if err != nil {
-		fmt.Println(console.Error("Error searching for book: %s", query))
-    // TODO: Implement retrying
-		// fmt.Println(infoColor("Retrying with other site"))
-		// document, e = searchLibgen(query, siteToUse) // If this also fails then we have a problem
-	}
+  if err != nil || document == nil {
+    fmt.Println(console.Error("Error searching for book: %s", query))
+    return nil, errors.New("Error searching for book")
+  }
+
 	fmt.Println(console.Success("Search complete, parsing the document..."))
   
   page := documentparser.NewCurrentDocumentParser(document)
@@ -62,13 +62,10 @@ func (m *CurrentMirror) SearchByAuthor(query string) ([]book.Book, error) {
   m.filter = libgen.AUTHOR
   document, err := m.searchSite(query)
 
-	if err != nil {
-		fmt.Println(console.Error("Error searching for book: %s", query))
-    // TODO: Implement retrying
-		// fmt.Println(infoColor("Retrying with other site"))
-		// document, e = searchLibgen(query, siteToUse) // If this also fails then we have a problem
-	}
-	fmt.Println(console.Success("Search complete, parsing the document..."))
+  if err != nil || document == nil {
+    fmt.Println(console.Error("Error searching for book: %s", query))
+    return nil, errors.New("Error searching for book")
+  }
   
   page := documentparser.NewCurrentDocumentParser(document)
   bookResults := page.GetBookDataFromDocument()
@@ -84,7 +81,6 @@ func (m *CurrentMirror) SearchByAuthor(query string) ([]book.Book, error) {
 // Search the libgen site returns the document 
 // of the search results page
 func (m *CurrentMirror) searchSite(query string) (*goquery.Document, error) {
-
   baseUrl := fmt.Sprintf("https://libgen.%s/index.php", m.domain)
 
 	queryString := fmt.Sprintf(
@@ -100,6 +96,11 @@ func (m *CurrentMirror) searchSite(query string) (*goquery.Document, error) {
   fmt.Println(reqString)
 
 	resp, e := http.Get(reqString)
+
+  if (resp.StatusCode > 400) {
+    fmt.Println("Library Genesis is down. ¯\\_(ツ)_/¯")
+    return nil, errors.New("Library Genesis is down")
+  }
 
 	if e != nil {
 		return nil, e

@@ -1,6 +1,7 @@
 package mirror
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -37,11 +38,12 @@ func (m *LegacyMirror) SearchByTitle(query string) ([]book.Book, error) {
 
 	document, err := m.searchSite(query)
 
-	if err != nil {
+	if err != nil || document == nil {
 		fmt.Println(console.Error("Error searching for book: %s", query))
 		// TODO: Implement retrying
 		// fmt.Println(infoColor("Retrying with other site"))
 		// document, e = searchLibgen(query, siteToUse) // If this also fails then we have a problem
+    return nil, errors.New("Error searching for book")
 	}
 	fmt.Println(console.Success("Search complete, parsing the document..."))
 
@@ -61,8 +63,9 @@ func (m *LegacyMirror) SearchByAuthor(query string) ([]book.Book, error) {
   m.filter = libgen.AUTHOR
   document, err := m.searchSite(query)
 
-  if err != nil {
+  if err != nil || document == nil {
     fmt.Println(console.Error("Error searching for book: %s", query))
+    return nil, errors.New("Error searching for book")
   }
 
   bookResults := 
@@ -91,6 +94,11 @@ func (m *LegacyMirror) searchSite(query string) (*goquery.Document, error) {
 	fmt.Println(console.Info(queryString))
 
 	resp, e := http.Get(queryString)
+
+  if (resp.StatusCode > 400) {
+    fmt.Println("Library Genesis is down. ¯\\_(ツ)_/¯")
+    return nil, errors.New("Library Genesis is down")
+  }
 
 	if e != nil {
 		return nil, e
