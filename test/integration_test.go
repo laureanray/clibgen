@@ -69,7 +69,7 @@ func runBinaryWithFileInput(args []string, bytesToWrite []byte) ([]byte, error) 
 
   time.Sleep(1 * time.Second)
 
-  _, err = stdin.Write([]byte{14, 10})
+  _, err = stdin.Write([]byte{})
 
   if err != nil {
     fmt.Println("Error writing to stdin", err)
@@ -85,11 +85,9 @@ func runBinaryWithFileInput(args []string, bytesToWrite []byte) ([]byte, error) 
   out, _ := ioutil.ReadAll(stdout)
 
   if err = cmd.Wait(); err != nil {
-    fmt.Println(string(out), err.Error())
     if strings.Contains(err.Error(), "interrupt") {
       return out, nil
     } else {
-      fmt.Println("erroring")
       return nil, err
     }
   }
@@ -113,8 +111,6 @@ func TestStaticCliArgs(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-
-      fmt.Println(string(output))
 
 			if *update {
 				writeFixture(t, tt.fixture, output)
@@ -154,27 +150,26 @@ func TestSearch(t *testing.T) {
 				writeFixture(t, tt.fixture, output)
 			}
 
-			actual := removeLastLine(string(output))
+			actual := removeLastLine(string(output), 1)
 			expected := strings.TrimSpace(loadFixture(t, tt.fixture))
 
-      fmt.Printf("'%s'", actual)
-      fmt.Printf("'%s'", expected)
+      fmt.Println("\nactual:\n", actual)
+      fmt.Println("\nexpected:\n", expected)
 
 			if !reflect.DeepEqual(actual, expected) {
-        t.Fatalf("fail")
         t.Fatalf("actual: \n'%s'\n, expected: \n'%s'\n", actual, expected)
 			}
 		})
 	}
 }
 
-func removeLastLine(str string) string {
+func removeLastLine(str string, num int) string {
 	lines := strings.Split(str, "\n")
+
 	if len(lines) > 0 {
-		lines = lines[:len(lines)-1]
+		lines = lines[:len(lines) - num]
 	}
 
-  fmt.Println("lines", lines)
 	return strings.Join(lines, "\n")
 }
 
