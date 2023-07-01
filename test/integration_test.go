@@ -8,7 +8,9 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
+	"time"
 )
 
 var (
@@ -46,32 +48,53 @@ func runBinary(args []string) ([]byte, error) {
 }
 
 func runBinaryWithFileInput(args []string, bytesToWrite []byte) ([]byte, error) {
-  oldStdin := os.Stdin
-  defer func() { os.Stdin = oldStdin }()
-
-  tmpInputFile, err := ioutil.TempFile("", "")
-
-  defer os.Remove(tmpInputFile.Name())
-
-  if err != nil {
-    fmt.Printf("could not create temp file: %v", err)
-  }
-
-  if _, err := tmpInputFile.Write(bytesToWrite); err != nil {
-    panic(err)
-  }
-
-  if _, err := tmpInputFile.Seek(0, 0); err != nil {
-    panic(err)
-  }
-
-  os.Stdin = tmpInputFile
-
+  fmt.Println("Running binary with file input", bytesToWrite)
   fmt.Printf("Executing command: %s", binaryPath)
 
   cmd := exec.Command(binaryPath, args...)
   cmd.Env = append(os.Environ(), "GOCOVERDIR=.coverdata")
-  return cmd.CombinedOutput()
+
+  stdout, err := cmd.StdoutPipe()
+  stdin, err := cmd.StdinPipe()
+
+  cmd.Stderr = cmd.Stdout
+
+  if err != nil {
+    return nil, err
+  }
+
+  if err = cmd.Start(); err != nil {
+    return nil, err
+  }
+
+  time.Sleep(1 * time.Second)
+
+  _, err = stdin.Write([]byte{14, 10})
+
+  if err != nil {
+    fmt.Println("Error writing to stdin", err)
+  }
+
+  time.Sleep(3 * time.Second)
+
+  if err = cmd.Process.Signal(os.Interrupt); err != nil {
+    fmt.Println("signal")
+    return nil, err
+  }
+
+  out, _ := ioutil.ReadAll(stdout)
+
+  if err = cmd.Wait(); err != nil {
+    fmt.Println(string(out), err.Error())
+    if strings.Contains(err.Error(), "interrupt") {
+      return out, nil
+    } else {
+      fmt.Println("erroring")
+      return nil, err
+    }
+  }
+
+  return nil, err
 }
 
 func TestStaticCliArgs(t *testing.T) {
@@ -80,13 +103,7 @@ func TestStaticCliArgs(t *testing.T) {
 		args    []string
 		fixture string
 	}{
-		// {"no arguments", []string{}, "no-args.golden"},
     {"help args", []string{"--help"}, "help.golden"},
-    // {"search test", []string{"search", "Eloquent JavaScript"}, "eloquent.golden"},
-    
-		// {"one argument", []string{"ciao"}, "one-argument.golden"},
-		// {"multiple arguments", []string{"ciao", "hello"}, "multiple-arguments.golden"},
-		// {"shout arg", []string{"--shout", "ciao"}, "shout-arg.golden"},
 	}
 
 	for _, tt := range tests {
@@ -121,11 +138,7 @@ func TestSearch(t *testing.T) {
 		fixture string
     bytesToWrite []byte
 	}{
-		// {"no arguments", []string{}, "no-args.golden"},
-    {"search test", []string{"search \"Eloquent JavaScript\""}, "eloquent.golden", []byte{14, 10}},
-		// {"one argument", []string{"ciao"}, "one-argument.golden"},
-		// {"multiple arguments", []string{"ciao", "hello"}, "multiple-arguments.golden"},
-		// {"shout arg", []string{"--shout", "ciao"}, "shout-arg.golden"},
+    {"search test", []string{"search", "Eloquent JavaScript"}, "eloquent.golden", []byte{14, 10}},
 	}
 
 	for _, tt := range tests {
@@ -133,64 +146,37 @@ func TestSearch(t *testing.T) {
 			output, err := runBinaryWithFileInput(tt.args, tt.bytesToWrite)
 
 			if err != nil {
+        fmt.Println("error", err.Error())
 				t.Fatal(err)
 			}
-
-      fmt.Println(string(output))
 
 			if *update {
 				writeFixture(t, tt.fixture, output)
 			}
 
-			actual := string(output)
+			actual := removeLastLine(string(output))
+			expected := strings.TrimSpace(loadFixture(t, tt.fixture))
 
-			expected := loadFixture(t, tt.fixture)
+      fmt.Printf("'%s'", actual)
+      fmt.Printf("'%s'", expected)
 
 			if !reflect.DeepEqual(actual, expected) {
-				t.Fatalf("actual = %s, expected = %s", actual, expected)
+        t.Fatalf("fail")
+        t.Fatalf("actual: \n'%s'\n, expected: \n'%s'\n", actual, expected)
 			}
 		})
 	}
-
 }
 
-// func TestSearch(t *testing.T) {
-// 	tests := []struct {
-// 		name    string
-// 		args    []string
-// 		fixture string
-// 	}{
-// 		// {"no arguments", []string{}, "no-args.golden"},
-//     {"search test", []string{"search \"Eloquent JavaScript\""}, "eloquent.golden"},
-// 		// {"one argument", []string{"ciao"}, "one-argument.golden"},
-// 		// {"multiple arguments", []string{"ciao", "hello"}, "multiple-arguments.golden"},
-// 		// {"shout arg", []string{"--shout", "ciao"}, "shout-arg.golden"},
-// 	}
-//
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			output, err := runBinary(tt.args)
-//
-// 			if err != nil {
-// 				t.Fatal(err)
-// 			}
-//
-//       fmt.Println(string(output))
-//
-// 			if *update {
-// 				writeFixture(t, tt.fixture, output)
-// 			}
-//
-// 			actual := string(output)
-//
-// 			expected := loadFixture(t, tt.fixture)
-//
-// 			if !reflect.DeepEqual(actual, expected) {
-// 				t.Fatalf("actual = %s, expected = %s", actual, expected)
-// 			}
-// 		})
-// 	}
-// }
+func removeLastLine(str string) string {
+	lines := strings.Split(str, "\n")
+	if len(lines) > 0 {
+		lines = lines[:len(lines)-1]
+	}
+
+  fmt.Println("lines", lines)
+	return strings.Join(lines, "\n")
+}
 
 func writeFixture(t *testing.T, goldenFile string, actual []byte) {
 	t.Helper()
