@@ -97,20 +97,11 @@ var (
 func init() {
 	searchCmd.
 		PersistentFlags().
-		StringVarP(&selectedSite, "site", "s", "legacy", `select which site to use
-		options: 
-			"legacy" 
-			"new"
-	`)
+		StringVarP(&selectedSite, "site", "s", "legacy", `which website to use [legacy, new]`)
 
 	searchCmd.
 		PersistentFlags().
-		StringVarP(&selectedFilter, "filter", "f", "title", `select which filter to use
-    options:
-      "title"
-      "author"
-      "isbn"
-  `)
+		StringVarP(&selectedFilter, "filter", "f", "title", `search by [title, author, isbn]`)
 
 	searchCmd.
 		PersistentFlags().
