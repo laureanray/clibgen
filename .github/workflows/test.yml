@@ -22,7 +22,7 @@ jobs:
         uses: actions/setup-go@v4
       -
         name: Run Build
-        run: go build -v ./...
+        run: go build ./...
       -
         name: Run Tests
-        run: go test -v ./test
+        run: go test ./test
