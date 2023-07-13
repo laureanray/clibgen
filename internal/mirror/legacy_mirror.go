@@ -43,7 +43,7 @@ func (m *LegacyMirror) SearchByTitle(query string) ([]book.Book, error) {
 		// TODO: Implement retrying
 		// fmt.Println(infoColor("Retrying with other site"))
 		// document, e = searchLibgen(query, siteToUse) // If this also fails then we have a problem
-    return nil, errors.New("Error searching for book")
+		return nil, errors.New("Error searching for book")
 	}
 	fmt.Println(console.Success("Search complete, parsing the document..."))
 
@@ -58,24 +58,24 @@ func (m *LegacyMirror) SearchByTitle(query string) ([]book.Book, error) {
 }
 
 func (m *LegacyMirror) SearchByAuthor(query string) ([]book.Book, error) {
-  fmt.Println("Searching by author: ", console.Higlight(query))
+	fmt.Println("Searching by author: ", console.Higlight(query))
 
-  m.filter = libgen.AUTHOR
-  document, err := m.searchSite(query)
+	m.filter = libgen.AUTHOR
+	document, err := m.searchSite(query)
 
-  if err != nil || document == nil {
-    fmt.Println(console.Error("Error searching for book: %s", query))
-    return nil, errors.New("Error searching for book")
-  }
+	if err != nil || document == nil {
+		fmt.Println(console.Error("Error searching for book: %s", query))
+		return nil, errors.New("Error searching for book")
+	}
 
-  bookResults := 
-    documentparser.NewLegacyDocumentParser(document).GetBookDataFromDocument()
+	bookResults :=
+		documentparser.NewLegacyDocumentParser(document).GetBookDataFromDocument()
 
-  if len(bookResults) >= m.config.numberOfResults {
-    bookResults = bookResults[:m.config.numberOfResults]
-  }
+	if len(bookResults) >= m.config.numberOfResults {
+		bookResults = bookResults[:m.config.numberOfResults]
+	}
 
-  return bookResults, err
+	return bookResults, err
 }
 
 // Search the libgen site returns the document
@@ -95,10 +95,10 @@ func (m *LegacyMirror) searchSite(query string) (*goquery.Document, error) {
 
 	resp, e := http.Get(queryString)
 
-  if (resp.StatusCode > 400) {
-    fmt.Println("Library Genesis is down. ¯\\_(ツ)_/¯")
-    return nil, errors.New("Library Genesis is down")
-  }
+	if resp.StatusCode > 400 {
+		fmt.Println("Library Genesis is down. ¯\\_(ツ)_/¯")
+		return nil, errors.New("Library Genesis is down")
+	}
 
 	if e != nil {
 		return nil, e
@@ -122,12 +122,12 @@ func (m *LegacyMirror) searchSite(query string) (*goquery.Document, error) {
 }
 
 func (m *LegacyMirror) DownloadSelection(selectedBook book.Book, outputDirectory string) {
-  fmt.Println(console.Info("Downloading book..."))
-  directLink := documentparser.GetDirectDownloadLinkFromLegacy(selectedBook.Mirrors[0])
+	fmt.Println(console.Info("Downloading book..."))
+	directLink := documentparser.GetDirectDownloadLinkFromLegacy(selectedBook.Mirrors[0])
 
-  if outputDirectory == "" {
-    outputDirectory = "./"
-  }
-  
-  downloader.NewDownloader(selectedBook, directLink, outputDirectory).Download()
+	if outputDirectory == "" {
+		outputDirectory = "./"
+	}
+
+	downloader.NewDownloader(selectedBook, directLink, outputDirectory).Download()
 }

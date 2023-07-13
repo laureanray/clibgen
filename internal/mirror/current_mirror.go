@@ -16,37 +16,37 @@ import (
 )
 
 type CurrentMirror struct {
-  domain libgen.Domain
-  filter libgen.Filter
-  config Configuration
+	domain libgen.Domain
+	filter libgen.Filter
+	config Configuration
 }
 
 func NewCurrentMirror(domain libgen.Domain) *CurrentMirror {
-  return &CurrentMirror{
-    domain: domain,
-    // TODO: Make this configurable
-    filter: libgen.TITLE,
-    config: Configuration{
-      numberOfResults: 5,
-    },
-  }
+	return &CurrentMirror{
+		domain: domain,
+		// TODO: Make this configurable
+		filter: libgen.TITLE,
+		config: Configuration{
+			numberOfResults: 5,
+		},
+	}
 }
 
 func (m *CurrentMirror) SearchByTitle(query string) ([]book.Book, error) {
 	fmt.Println("Searching for: ", console.Higlight(query))
 	var document *goquery.Document
 
-  document, err := m.searchSite(query)
+	document, err := m.searchSite(query)
 
-  if err != nil || document == nil {
-    fmt.Println(console.Error("Error searching for book: %s", query))
-    return nil, errors.New("Error searching for book")
-  }
+	if err != nil || document == nil {
+		fmt.Println(console.Error("Error searching for book: %s", query))
+		return nil, errors.New("Error searching for book")
+	}
 
 	fmt.Println(console.Success("Search complete, parsing the document..."))
-  
-  page := documentparser.NewCurrentDocumentParser(document)
-  bookResults := page.GetBookDataFromDocument()
+
+	page := documentparser.NewCurrentDocumentParser(document)
+	bookResults := page.GetBookDataFromDocument()
 
 	if len(bookResults) >= m.config.numberOfResults {
 		bookResults = bookResults[:m.config.numberOfResults]
@@ -59,16 +59,16 @@ func (m *CurrentMirror) SearchByAuthor(query string) ([]book.Book, error) {
 	fmt.Println("Searching by author: ", console.Higlight(query))
 	var document *goquery.Document
 
-  m.filter = libgen.AUTHOR
-  document, err := m.searchSite(query)
+	m.filter = libgen.AUTHOR
+	document, err := m.searchSite(query)
 
-  if err != nil || document == nil {
-    fmt.Println(console.Error("Error searching for book: %s", query))
-    return nil, errors.New("Error searching for book")
-  }
-  
-  page := documentparser.NewCurrentDocumentParser(document)
-  bookResults := page.GetBookDataFromDocument()
+	if err != nil || document == nil {
+		fmt.Println(console.Error("Error searching for book: %s", query))
+		return nil, errors.New("Error searching for book")
+	}
+
+	page := documentparser.NewCurrentDocumentParser(document)
+	bookResults := page.GetBookDataFromDocument()
 
 	if len(bookResults) >= m.config.numberOfResults {
 		bookResults = bookResults[:m.config.numberOfResults]
@@ -77,30 +77,29 @@ func (m *CurrentMirror) SearchByAuthor(query string) ([]book.Book, error) {
 	return bookResults, err
 }
 
-
-// Search the libgen site returns the document 
+// Search the libgen site returns the document
 // of the search results page
 func (m *CurrentMirror) searchSite(query string) (*goquery.Document, error) {
-  baseUrl := fmt.Sprintf("https://libgen.%s/index.php", m.domain)
+	baseUrl := fmt.Sprintf("https://libgen.%s/index.php", m.domain)
 
 	queryString := fmt.Sprintf(
-    "%s?req=\"%s\"",
-    baseUrl,
-    url.QueryEscape(query),
-  )
+		"%s?req=\"%s\"",
+		baseUrl,
+		url.QueryEscape(query),
+	)
 
-  filter := string(string(m.filter)[0])
+	filter := string(string(m.filter)[0])
 
-  reqString:= queryString + "&columns%5B%5D=" + filter + "&objects%5B%5D=f&objects%5B%5D=e&objects%5B%5D=s&objects%5B%5D=a&objects%5B%5D=p&objects%5B%5D=w&topics%5B%5D=l&topics%5B%5D=c&topics%5B%5D=f&res=25&gmode=on&filesuns=all"
+	reqString := queryString + "&columns%5B%5D=" + filter + "&objects%5B%5D=f&objects%5B%5D=e&objects%5B%5D=s&objects%5B%5D=a&objects%5B%5D=p&objects%5B%5D=w&topics%5B%5D=l&topics%5B%5D=c&topics%5B%5D=f&res=25&gmode=on&filesuns=all"
 
-  fmt.Println(reqString)
+	fmt.Println(reqString)
 
 	resp, e := http.Get(reqString)
 
-  if (resp.StatusCode > 400) {
-    fmt.Println("Library Genesis is down. ¯\\_(ツ)_/¯")
-    return nil, errors.New("Library Genesis is down")
-  }
+	if resp.StatusCode > 400 {
+		fmt.Println("Library Genesis is down. ¯\\_(ツ)_/¯")
+		return nil, errors.New("Library Genesis is down")
+	}
 
 	if e != nil {
 		return nil, e
@@ -113,7 +112,7 @@ func (m *CurrentMirror) searchSite(query string) (*goquery.Document, error) {
 		}
 	}(resp.Body)
 
-  document, e := goquery.NewDocumentFromReader(resp.Body)
+	document, e := goquery.NewDocumentFromReader(resp.Body)
 
 	if e != nil {
 		fmt.Println(e)
@@ -124,11 +123,11 @@ func (m *CurrentMirror) searchSite(query string) (*goquery.Document, error) {
 }
 
 func (m *CurrentMirror) DownloadSelection(selectedBook book.Book, outputDirectory string) {
-  fmt.Println(console.Info("Downloading book..."))
+	fmt.Println(console.Info("Downloading book..."))
 
-  directLink := documentparser.GetDirectDownloadLinkFromCurrent(selectedBook.Mirrors[0])
-  if outputDirectory == "" {
-    outputDirectory = "./"
-  }
-  downloader.NewDownloader(selectedBook, directLink, outputDirectory).Download()
+	directLink := documentparser.GetDirectDownloadLinkFromCurrent(selectedBook.Mirrors[0])
+	if outputDirectory == "" {
+		outputDirectory = "./"
+	}
+	downloader.NewDownloader(selectedBook, directLink, outputDirectory).Download()
 }

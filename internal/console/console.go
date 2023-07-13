@@ -29,6 +29,6 @@ func Success(format string, a ...any) string {
 }
 
 func Normal(format string, a ...any) string {
-  white := color.New(color.FgWhite).SprintFunc()
-  return white(fmt.Sprintf(format, a...))
+	white := color.New(color.FgWhite).SprintFunc()
+	return white(fmt.Sprintf(format, a...))
 }

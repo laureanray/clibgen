@@ -24,17 +24,17 @@ func NewCurrentDocumentParserFromReader(r io.Reader) *CurrentDocumentParser {
 }
 
 func findTitle(selection *goquery.Selection) string {
-  var title string
-  selection.Find("a").EachWithBreak(func(v int, s *goquery.Selection) bool {
-    if  s.Text() != "" && len(s.Text()) > 1 {
-      title = s.Text()
-      // Break out of the loop
-      return false
-    }
-    return true
-  })
+	var title string
+	selection.Find("a").EachWithBreak(func(v int, s *goquery.Selection) bool {
+		if s.Text() != "" && len(s.Text()) > 1 {
+			title = s.Text()
+			// Break out of the loop
+			return false
+		}
+		return true
+	})
 
-  return title
+	return title
 }
 
 func (cdp *CurrentDocumentParser) GetBookDataFromDocument() []book.Book {
@@ -82,7 +82,7 @@ func (cdp *CurrentDocumentParser) GetBookDataFromDocument() []book.Book {
 }
 
 func (cdp *CurrentDocumentParser) getDownloadLinkFromDocument() (string, bool) {
-  return cdp.doc.Find("#main a").First().Attr("href")
+	return cdp.doc.Find("#main a").First().Attr("href")
 }
 
 func (cdp *CurrentDocumentParser) getBookTitleFromSelection(selection *goquery.Selection) string {
@@ -103,8 +103,8 @@ func (cdp *CurrentDocumentParser) getBookTitleFromSelection(selection *goquery.S
 func (cdp *CurrentDocumentParser) GetDirectDownloadLink(selectedBook book.Book) string {
 	fmt.Println("Obtaining direct download link")
 
-  // TODO Implement retry?
-  link := selectedBook.Mirrors[0]
+	// TODO Implement retry?
+	link := selectedBook.Mirrors[0]
 
 	resp, err := http.Get(link)
 	defer func(Body io.ReadCloser) {

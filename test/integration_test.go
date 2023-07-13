@@ -14,90 +14,89 @@ import (
 )
 
 var (
-  update = flag.Bool("update", false, "update .golden files")
+	update = flag.Bool("update", false, "update .golden files")
 )
 
 var binaryName = "clibgen"
 var binaryPath = ""
 
 func TestMain(m *testing.M) {
-  flag.Parse()
+	flag.Parse()
 
-  err := os.Chdir("..")
-  if err != nil {
-    fmt.Printf("could not change dir: %v", err)
-    os.Exit(1)
-  }
+	err := os.Chdir("..")
+	if err != nil {
+		fmt.Printf("could not change dir: %v", err)
+		os.Exit(1)
+	}
 
-  dir, err := os.Getwd()
+	dir, err := os.Getwd()
 
-  if err != nil {
-    fmt.Printf("could not get current dir: %v", err)
-  }
+	if err != nil {
+		fmt.Printf("could not get current dir: %v", err)
+	}
 
-  binaryPath = filepath.Join(dir, binaryName)
+	binaryPath = filepath.Join(dir, binaryName)
 
-  fmt.Println("binary path", binaryPath)
+	fmt.Println("binary path", binaryPath)
 
-  os.Exit(m.Run())
+	os.Exit(m.Run())
 }
 
-
 func runBinary(args []string) ([]byte, error) {
-  cmd := exec.Command(binaryPath, args...)
-  cmd.Env = append(os.Environ(), "GOCOVERDIR=.coverdata")
-  return cmd.CombinedOutput()
+	cmd := exec.Command(binaryPath, args...)
+	cmd.Env = append(os.Environ(), "GOCOVERDIR=.coverdata")
+	return cmd.CombinedOutput()
 }
 
 func runBinaryWithFileInput(args []string, bytesToWrite []byte) ([]byte, error) {
-  fmt.Println("Running binary with file input", bytesToWrite)
-  fmt.Printf("Executing command: %s", binaryPath)
+	fmt.Println("Running binary with file input", bytesToWrite)
+	fmt.Printf("Executing command: %s", binaryPath)
 
-  cmd := exec.Command(binaryPath, args...)
-  cmd.Env = append(os.Environ(), "GOCOVERDIR=.coverdata")
+	cmd := exec.Command(binaryPath, args...)
+	cmd.Env = append(os.Environ(), "GOCOVERDIR=.coverdata")
 
-  stdout, err := cmd.StdoutPipe()
-  stdin, err := cmd.StdinPipe()
+	stdout, err := cmd.StdoutPipe()
+	stdin, err := cmd.StdinPipe()
 
-  cmd.Stderr = cmd.Stdout
+	cmd.Stderr = cmd.Stdout
 
-  if err != nil {
-    return nil, err
-  }
+	if err != nil {
+		return nil, err
+	}
 
-  fmt.Println("Starting command...") 
-  if err = cmd.Start(); err != nil {
-    return nil, err
-  }
+	fmt.Println("Starting command...")
+	if err = cmd.Start(); err != nil {
+		return nil, err
+	}
 
-  time.Sleep(1 * time.Second)
+	time.Sleep(1 * time.Second)
 
-  _, err = stdin.Write(bytesToWrite)
+	_, err = stdin.Write(bytesToWrite)
 
-  fmt.Println("Wrote to stdin", bytesToWrite)
+	fmt.Println("Wrote to stdin", bytesToWrite)
 
-  if err != nil {
-    fmt.Println("Error writing to stdin", err)
-  }
+	if err != nil {
+		fmt.Println("Error writing to stdin", err)
+	}
 
-  time.Sleep(14 * time.Second)
+	time.Sleep(14 * time.Second)
 
-  if err = cmd.Process.Signal(os.Interrupt); err != nil {
-    fmt.Println("signal")
-    return nil, err
-  }
+	if err = cmd.Process.Signal(os.Interrupt); err != nil {
+		fmt.Println("signal")
+		return nil, err
+	}
 
-  out, _ := ioutil.ReadAll(stdout)
+	out, _ := ioutil.ReadAll(stdout)
 
-  if err = cmd.Wait(); err != nil {
-    if strings.Contains(err.Error(), "interrupt") {
-      return out, nil
-    } else {
-      return nil, err
-    }
-  }
+	if err = cmd.Wait(); err != nil {
+		if strings.Contains(err.Error(), "interrupt") {
+			return out, nil
+		} else {
+			return nil, err
+		}
+	}
 
-  return out, err
+	return out, err
 }
 
 func TestStaticCliArgs(t *testing.T) {
@@ -106,7 +105,7 @@ func TestStaticCliArgs(t *testing.T) {
 		args    []string
 		fixture string
 	}{
-    {"help args", []string{"--help"}, "help.golden"},
+		{"help args", []string{"--help"}, "help.golden"},
 	}
 
 	for _, tt := range tests {
@@ -134,26 +133,26 @@ func TestStaticCliArgs(t *testing.T) {
 
 func TestSearch(t *testing.T) {
 	tests := []struct {
-		name    string
-		args    []string
-    bytesToWrite []byte
+		name         string
+		args         []string
+		bytesToWrite []byte
 	}{
-    {"search test", []string{"search", "Eloquent JavaScript"}, []byte{14, 14, 10}},
+		{"search test", []string{"search", "Eloquent JavaScript"}, []byte{14, 14, 10}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			output, err := runBinaryWithFileInput(tt.args, tt.bytesToWrite)
 
-      fmt.Println(string(output))
-      if _, err := os.Stat("eloquent-javascript-a-modern-introduction-to-programming.epub"); err == nil {
-        fmt.Printf("File exists\n");
-      } else {
+			fmt.Println(string(output))
+			if _, err := os.Stat("eloquent-javascript-a-modern-introduction-to-programming.epub"); err == nil {
+				fmt.Printf("File exists\n")
+			} else {
 				t.Fatal("File wasn't found")
-      }
+			}
 
 			if err != nil {
-        fmt.Println("error", err.Error())
+				fmt.Println("error", err.Error())
 				t.Fatal(err)
 			}
 		})
@@ -164,7 +163,7 @@ func removeLastLine(str string, num int) string {
 	lines := strings.Split(str, "\n")
 
 	if len(lines) > 0 {
-		lines = lines[:len(lines) - num]
+		lines = lines[:len(lines)-num]
 	}
 
 	return strings.Join(lines, "\n")
@@ -177,22 +176,22 @@ func writeFixture(t *testing.T, goldenFile string, actual []byte) {
 	f, err := os.OpenFile(goldenPath, os.O_RDWR, 0644)
 	defer f.Close()
 
-  _, err = f.WriteString(string(actual))
+	_, err = f.WriteString(string(actual))
 
-  if err != nil {
-    t.Fatalf("Error writing to file %s: %s", goldenPath, err)
-  }
+	if err != nil {
+		t.Fatalf("Error writing to file %s: %s", goldenPath, err)
+	}
 }
 
 func loadFixture(t *testing.T, goldenFile string) string {
 	goldenPath := "testdata/" + goldenFile
 
-  f, err := os.OpenFile(goldenPath, os.O_RDWR, 0644)
+	f, err := os.OpenFile(goldenPath, os.O_RDWR, 0644)
 
-  content, err := ioutil.ReadAll(f)
-  if err != nil {
-    t.Fatalf("Error opening file %s: %s", goldenPath, err)
-  }
+	content, err := ioutil.ReadAll(f)
+	if err != nil {
+		t.Fatalf("Error opening file %s: %s", goldenPath, err)
+	}
 
-  return string(content)
+	return string(content)
 }
