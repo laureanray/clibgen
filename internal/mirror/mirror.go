@@ -10,7 +10,7 @@ type Mirror interface {
   SearchByAuthor(author string) ([]book.Book, error)
   // SearchByISBN(isbn string) []book.Book
   // 1GetDownloadLink(book book.Book) string
-  DownloadSelection(book book.Book)
+  DownloadSelection(book book.Book, outputDirectory string)
 }
 
 // TODO: Make this persistent
