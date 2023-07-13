@@ -37,6 +37,8 @@ func TestMain(m *testing.M) {
 
   binaryPath = filepath.Join(dir, binaryName)
 
+  fmt.Println("binary path", binaryPath)
+
   os.Exit(m.Run())
 }
 
