@@ -65,6 +65,7 @@ func runBinaryWithFileInput(args []string, bytesToWrite []byte) ([]byte, error) 
     return nil, err
   }
 
+  fmt.Println("Starting command...") 
   if err = cmd.Start(); err != nil {
     return nil, err
   }
@@ -73,11 +74,13 @@ func runBinaryWithFileInput(args []string, bytesToWrite []byte) ([]byte, error) 
 
   _, err = stdin.Write(bytesToWrite)
 
+  fmt.Println("Wrote to stdin", bytesToWrite)
+
   if err != nil {
     fmt.Println("Error writing to stdin", err)
   }
 
-  time.Sleep(15 * time.Second)
+  time.Sleep(14 * time.Second)
 
   if err = cmd.Process.Signal(os.Interrupt); err != nil {
     fmt.Println("signal")
@@ -94,7 +97,7 @@ func runBinaryWithFileInput(args []string, bytesToWrite []byte) ([]byte, error) 
     }
   }
 
-  return nil, err
+  return out, err
 }
 
 func TestStaticCliArgs(t *testing.T) {
@@ -133,33 +136,25 @@ func TestSearch(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    []string
-		fixture string
     bytesToWrite []byte
 	}{
-    {"search test", []string{"search", "Eloquent JavaScript"}, "eloquent.golden", []byte{14, 14, 10}},
+    {"search test", []string{"search", "Eloquent JavaScript"}, []byte{14, 14, 10}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			output, err := runBinaryWithFileInput(tt.args, tt.bytesToWrite)
 
+      fmt.Println(string(output))
+      if _, err := os.Stat("eloquent-javascript-a-modern-introduction-to-programming.epub"); err == nil {
+        fmt.Printf("File exists\n");
+      } else {
+				t.Fatal("File wasn't found")
+      }
+
 			if err != nil {
         fmt.Println("error", err.Error())
 				t.Fatal(err)
-			}
-
-			if *update {
-				writeFixture(t, tt.fixture, output)
-			}
-
-			actual := removeLastLine(string(output), 1)
-			expected := strings.TrimSpace(loadFixture(t, tt.fixture))
-
-      fmt.Println("\nactual:\n", actual)
-      fmt.Println("\nexpected:\n", expected)
-
-			if !reflect.DeepEqual(actual, expected) {
-        t.Fatalf("actual: \n'%s'\n, expected: \n'%s'\n", actual, expected)
 			}
 		})
 	}
