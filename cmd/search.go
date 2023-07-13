@@ -98,7 +98,7 @@ var (
 
       println(resultInt)
 
-      m.DownloadSelection(books[resultInt])
+      m.DownloadSelection(books[resultInt - 1])
 		},
 	}
 )
