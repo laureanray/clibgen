@@ -1,5 +1,4 @@
-name: test
-
+name: clibgen-test
 on:
   push:
     branches:
@@ -9,7 +8,7 @@ permissions:
   contents: write
 
 jobs:
-  goreleaser:
+  clibgen-test:
     runs-on: ubuntu-latest
     steps:
       -
@@ -22,10 +21,10 @@ jobs:
         uses: actions/setup-go@v4
       -
         name: Run Build
-        run: go build ./...
+        run: go build 
       - 
         name: test
-        run: ls && cwd
+        run: ls && pwd
       -
         name: Run Tests
         run: go test ./test
