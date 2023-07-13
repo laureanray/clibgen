@@ -3,6 +3,9 @@ on:
   push:
     branches:
       - '*'
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -22,9 +25,6 @@ jobs:
       -
         name: Run Build
         run: go build 
-      - 
-        name: test
-        run: ls && pwd
       -
         name: Run Tests
         run: go test ./test
