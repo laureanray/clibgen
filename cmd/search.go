@@ -2,22 +2,14 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
-
 	"github.com/fatih/color"
 	"github.com/laureanray/clibgen/internal/book"
 	"github.com/laureanray/clibgen/internal/libgen"
 	"github.com/laureanray/clibgen/internal/mirror"
+	"github.com/laureanray/clibgen/internal/utils"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
 )
-
-func truncateText(s string, max int) string {
-	if max > len(s) {
-		return s
-	}
-	return s[:strings.LastIndex(s[:max], " ")] + " ..."
-}
 
 func getExtension(s string) string {
 	cyan := color.New(color.FgHiCyan).SprintFunc()
@@ -36,7 +28,8 @@ func getExtension(s string) string {
 
 var (
 	selectedSite    string
-  selectedFilter string
+	selectedFilter  string
+	outputDirectory string
 	numberOfResults = 10
 
 	searchCmd = &cobra.Command{
@@ -50,55 +43,53 @@ var (
 				return
 			}
 
-      var m mirror.Mirror
+			var m mirror.Mirror
 
 			if selectedSite == "legacy" {
-        m = mirror.NewLegacyMirror(libgen.IS)
+				m = mirror.NewLegacyMirror(libgen.IS)
 			} else if selectedSite == "new" {
-        m = mirror.NewCurrentMirror(libgen.LC)
-			} else{
-        // TODO: Improve this.
-        fmt.Print("Not an option");
-        return
-      }
+				m = mirror.NewCurrentMirror(libgen.LC)
+			} else {
+				// TODO: Improve this.
+				fmt.Print("Not an option")
+				return
+			}
 
-      var books []book.Book
+			var books []book.Book
 
-      switch (selectedFilter) {
-      case libgen.AUTHOR:
-        books, _ = m.SearchByAuthor(args[0])
-      default:
-        books, _ = m.SearchByTitle(args[0])
-      }
+			switch selectedFilter {
+			case libgen.AUTHOR:
+				books, _ = m.SearchByAuthor(args[0])
+			default:
+				books, _ = m.SearchByTitle(args[0])
+			}
 
-      if len(books) == 0 {
-        return
-      }
+			if len(books) == 0 {
+				return
+			}
 
 			var titles []string
 
 			for _, book := range books {
-				parsedTitle := truncateText(book.Title, 42)
-				parsedAuthor := truncateText(book.Author, 24)
+				parsedTitle := utils.TruncateText(book.Title, 42)
+				parsedAuthor := utils.TruncateText(book.Author, 24)
 				parsedExt := getExtension(fmt.Sprintf("%-4s", book.Extension))
 				titles = append(titles, fmt.Sprintf("%s %-6s | %-45s %s", parsedExt, book.FileSize, parsedTitle, parsedAuthor))
 			}
-			
+
 			prompt := promptui.Select{
 				Label: "Select Title",
 				Items: titles,
 			}
-			
+
 			resultInt, _, err := prompt.Run()
-			
+
 			if err != nil {
 				fmt.Printf("Prompt failed %v\n", err)
 				return
 			}
 
-      println(resultInt)
-
-      m.DownloadSelection(books[resultInt])
+			m.DownloadSelection(books[resultInt], outputDirectory)
 		},
 	}
 )
@@ -112,14 +103,18 @@ func init() {
 			"new"
 	`)
 
-  searchCmd.
-    PersistentFlags().
-    StringVarP(&selectedFilter, "filter", "f", "title", `select which filter to use
+	searchCmd.
+		PersistentFlags().
+		StringVarP(&selectedFilter, "filter", "f", "title", `select which filter to use
     options:
       "title"
       "author"
       "isbn"
   `)
+
+	searchCmd.
+		PersistentFlags().
+		StringVarP(&outputDirectory, "output", "o", "./", `Output directory`)
 
 	searchCmd.
 		PersistentFlags().
