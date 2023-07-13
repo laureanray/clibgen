@@ -26,7 +26,7 @@ Manual Installation (Binaries)
 
 ### Usage
 
-Search for a book using old the old website (default)
+Search for a book using the old website (default)
 
 ```shell
 clibgen search "Eloquent JavaScript"
@@ -39,6 +39,10 @@ Search for a book using the newer website (this is useful if for some reason the
 clibgen search -s "new" "Eloquent JavaScript"
 ```
 
+```shell
+clibgen search -s "legacy" "Eloquent JavaScript"
+```
+
 Limit search results (default: 10)
 
 ```shell
@@ -47,4 +51,4 @@ clibgen search -n 5 "Eloquent JavaScript"
 
 ### Found an issue?
 
-Please open up an issue or a PR if you have a fix for it ;)
+Please open up an issue or a PR if you have a fix for it. 
