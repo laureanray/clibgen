@@ -23,6 +23,9 @@ jobs:
       -
         name: Run Build
         run: go build ./...
+      - 
+        name: test
+        run: ls && cwd
       -
         name: Run Tests
         run: go test ./test
