@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/kennygrant/sanitize"
@@ -39,7 +40,10 @@ func (d *Downloader) Download() error {
 	}
 
 	defer resp.Body.Close()
-	filename := sanitize.Path(d.outputFileDir + strings.Trim(d.selectedBook.Title, " ") + "." + d.selectedBook.Extension)
+	filename := sanitize.Path(strings.Trim(d.selectedBook.Title, " ") + "." + d.selectedBook.Extension)
+  filename = filepath.Clean(d.outputFileDir + "/" + filename)
+
+  fmt.Println("Downloading to: ", filename)
 
 	f, _ := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666)
 	defer f.Close()
