@@ -121,8 +121,13 @@ func (m *LegacyMirror) searchSite(query string) (*goquery.Document, error) {
 	return document, e
 }
 
-func (m *LegacyMirror) DownloadSelection(selectedBook book.Book) {
+func (m *LegacyMirror) DownloadSelection(selectedBook book.Book, outputDirectory string) {
   fmt.Println(console.Info("Downloading book..."))
   directLink := documentparser.GetDirectDownloadLinkFromLegacy(selectedBook.Mirrors[0])
-  downloader.NewDownloader(selectedBook, directLink).Download()
+
+  if outputDirectory == "" {
+    outputDirectory = "./"
+  }
+  
+  downloader.NewDownloader(selectedBook, directLink, outputDirectory).Download()
 }

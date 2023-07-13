@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/kennygrant/sanitize"
@@ -16,12 +17,14 @@ import (
 type Downloader struct {
   selectedBook book.Book
   directLink string
+  outputFileDir string
 }
 
-func NewDownloader(selectedBook book.Book, directLink string) *Downloader {
+func NewDownloader(selectedBook book.Book, directLink string, outputFileDir string) *Downloader {
   return &Downloader{
     selectedBook: selectedBook,
     directLink: directLink,
+    outputFileDir: outputFileDir,
   }
 }
 
@@ -38,6 +41,9 @@ func (d *Downloader) Download() error {
 
 	defer resp.Body.Close()
 	filename := sanitize.Path(strings.Trim(d.selectedBook.Title, " ") + "." + d.selectedBook.Extension)
+  filename = filepath.Clean(d.outputFileDir + "/" + filename)
+
+  fmt.Println("Downloading to: ", filename)
 
 	f, _ := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666)
 	defer f.Close()

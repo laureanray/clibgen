@@ -32,22 +32,19 @@ Search for a book using the old website (default)
 clibgen search "Eloquent JavaScript"
 ```
 
-Search for a book using the newer website (this is useful if for some reason the old website is down or the mirrors are not working)
-`-s or -site` flag
+#### Search
 
-```shell
-clibgen search -s "new" "Eloquent JavaScript"
-```
+Usage:
+`  clibgen search [flags]`
 
-```shell
-clibgen search -s "legacy" "Eloquent JavaScript"
-```
+Flags:
+-  -f, --filter string           search by [title, author, isbn] (default "title")
+-  -h, --help                    help for search
+-  -n, --number of results int   number of result(s) to be displayed maximum: 25 (default 10)
+-  -o, --output string           Output directory (default "./")
+-  -s, --site string             which website to use [legacy, new] (default "legacy")
 
-Limit search results (default: 10)
 
-```shell
-clibgen search -n 5 "Eloquent JavaScript"
-```
 
 ### Found an issue?
 
