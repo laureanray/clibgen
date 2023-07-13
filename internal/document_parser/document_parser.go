@@ -9,7 +9,6 @@ import (
 // }
 
 type DocumentParser interface {
-  GetBookDataFromDocument() []book.Book
-  GetDownloadLinkFromDocument() (string, bool)
+	GetBookDataFromDocument() []book.Book
+	GetDownloadLinkFromDocument() (string, bool)
 }
-

@@ -11,7 +11,7 @@ import (
 )
 
 type LegacyDocumentParser struct {
-  doc *goquery.Document
+	doc *goquery.Document
 }
 
 func NewLegacyDocumentParser(document *goquery.Document) *LegacyDocumentParser {
@@ -19,8 +19,8 @@ func NewLegacyDocumentParser(document *goquery.Document) *LegacyDocumentParser {
 }
 
 func NewLegacyDocumentParserFromReader(r io.Reader) *LegacyDocumentParser {
-  document, _ := goquery.NewDocumentFromReader(r)
-  return &LegacyDocumentParser{doc: document}
+	document, _ := goquery.NewDocumentFromReader(r)
+	return &LegacyDocumentParser{doc: document}
 }
 
 func (ldp *LegacyDocumentParser) GetBookDataFromDocument() []book.Book {
@@ -48,7 +48,7 @@ func (ldp *LegacyDocumentParser) GetBookDataFromDocument() []book.Book {
 				case 9, 10, 11:
 					href, hrefExists := columnSelection.Find("a").Attr("href")
 					if hrefExists {
-						mirrors = append(mirrors, href) 
+						mirrors = append(mirrors, href)
 					}
 				}
 			})
@@ -68,11 +68,9 @@ func (ldp *LegacyDocumentParser) GetBookDataFromDocument() []book.Book {
 	return books
 }
 
-
-func (ldp *LegacyDocumentParser) getDownloadLinkFromDocument() (string, bool){
-  return ldp.doc.Find("#download > ul > li > a").First().Attr("href")
+func (ldp *LegacyDocumentParser) getDownloadLinkFromDocument() (string, bool) {
+	return ldp.doc.Find("#download > ul > li > a").First().Attr("href")
 }
-
 
 func getBookTitleFromSelection(selection *goquery.Selection) string {
 	var title string
@@ -89,7 +87,6 @@ func getBookTitleFromSelection(selection *goquery.Selection) string {
 	return title
 }
 
-
 func GetDirectDownloadLinkFromLegacy(link string) string {
 	fmt.Println("Obtaining direct download link")
 	resp, err := http.Get(link)
@@ -105,17 +102,17 @@ func GetDirectDownloadLinkFromLegacy(link string) string {
 		fmt.Println("Error getting response:", err)
 	}
 
-  page := NewLegacyDocumentParserFromReader(resp.Body)
-  // TODO: I think this can be improved
-  directDownloadLink, exists := page.getDownloadLinkFromDocument()
+	page := NewLegacyDocumentParserFromReader(resp.Body)
+	// TODO: I think this can be improved
+	directDownloadLink, exists := page.getDownloadLinkFromDocument()
 
-  fmt.Println("Direct download link:", directDownloadLink)
+	fmt.Println("Direct download link:", directDownloadLink)
 
-  if exists {
-    return directDownloadLink
-  }
-  
-  return ""
+	if exists {
+		return directDownloadLink
+	}
+
+	return ""
 }
 
 func GetDirectDownloadLinkFromCurrent(link string) string {
@@ -133,17 +130,15 @@ func GetDirectDownloadLinkFromCurrent(link string) string {
 		fmt.Println("Error getting response:", err)
 	}
 
-  page := NewCurrentDocumentParserFromReader(resp.Body)
-  // TODO: I think this can be improved
-  directDownloadLink, exists := page.getDownloadLinkFromDocument()
+	page := NewCurrentDocumentParserFromReader(resp.Body)
+	// TODO: I think this can be improved
+	directDownloadLink, exists := page.getDownloadLinkFromDocument()
 
-  fmt.Println("Direct download link:", directDownloadLink)
+	fmt.Println("Direct download link:", directDownloadLink)
 
-  if exists {
-    return directDownloadLink
-  }
-  
-  return ""
+	if exists {
+		return directDownloadLink
+	}
+
+	return ""
 }
-
-
