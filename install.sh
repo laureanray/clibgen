@@ -44,10 +44,11 @@ if command -v clibgen >/dev/null; then
 else
 	case $SHELL in
 	/bin/zsh) shell_profile=".zshrc" ;;
+	/usr/bin/zsh) shell_profile=".zshrc" ;;
 	*) shell_profile=".bashrc" ;;
 	esac
 	echo "Manually add the directory to your \$HOME/$shell_profile (or similar)"
-	echo "  export CLIBGEN_INSTALL=\"$clibgen_install:was\""
+	echo "  export CLIBGEN_INSTALL=\"$clibgen_install\""
 	echo "  export PATH=\"\$CLIBGEN_INSTALL/bin:\$PATH\""
 	echo "Run '$exe --help' to get started"
 fi
