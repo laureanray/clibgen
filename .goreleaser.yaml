@@ -14,7 +14,7 @@ builds:
       - windows
       - darwin
     ldflags:
-      - -X github.com/laureanray/clibgen/cmd.version=`git tag --sort=-version:refname | head -n `
+      - -s -w -X github.com/laureanray/clibgen/cmd.version={{.Version}}
 checksum:
   name_template: 'checksums.txt'
 snapshot:
