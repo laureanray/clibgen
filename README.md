@@ -42,8 +42,6 @@ Flags:
 -  -h, --help                    help for search
 -  -n, --number of results int   number of result(s) to be displayed maximum: 25 (default 10)
 -  -o, --output string           Output directory (default "./")
--  -s, --site string             which website to use [legacy, new] (default "legacy")
-
 
 
 ### Found an issue?
