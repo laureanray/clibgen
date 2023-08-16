@@ -1,10 +1,13 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
 )
+
+var version string
 
 var rootCmd = &cobra.Command{
 	Use:   "clibgen",
@@ -12,6 +15,15 @@ var rootCmd = &cobra.Command{
 	Long: `
 Clibgen is a CLI application to search and download epubs, pdfs, from library genesis. 
 Useful if you are lazy to open up a browser to download e-books/resources.`,
+}
+
+var versionCmd = &cobra.Command{
+  Use:   "version",
+  Short: "Print the version number of Hugo",
+  Long:  `All software has versions. This is Hugo's`,
+  Run: func(cmd *cobra.Command, args []string) {
+    fmt.Println(version)
+  },
 }
 
 func Execute() {
@@ -22,5 +34,5 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+  rootCmd.AddCommand(versionCmd)
 }
