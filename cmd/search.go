@@ -29,7 +29,7 @@ func getExtension(s string) string {
 var (
   selectedFilter  string
 	outputDirectory string
-	numberOfResults = 10
+	numberOfResults int
 
 	searchCmd = &cobra.Command{
 		Use:   "search",
@@ -43,6 +43,9 @@ var (
 			}
 
       m := mirror.NewLegacyMirror(libgen.IS)
+
+      // Set Defaults
+      m.SetNumberOfResults(numberOfResults)
 
 			var books []book.Book
 
@@ -71,6 +74,7 @@ var (
 			prompt := promptui.Select{
 				Label: "Select Title",
 				Items: titles,
+        Size: 10,
 			}
 
 			resultInt, _, err := prompt.Run()

@@ -25,9 +25,13 @@ func NewLegacyMirror(domain libgen.Domain) *LegacyMirror {
 		domain: domain,
 		// TODO: Make this configurable
 		config: Configuration{
-			numberOfResults: 5,
+			numberOfResults: 10,
 		},
 	}
+}
+
+func (m *LegacyMirror) SetNumberOfResults(numberOfResults int) {
+  m.config.numberOfResults = numberOfResults
 }
 
 func (m *LegacyMirror) SearchByTitle(query string) ([]book.Book, error) {

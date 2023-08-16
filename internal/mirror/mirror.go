@@ -20,5 +20,3 @@ type Configuration struct {
 type NewMirror struct {
 	domain libgen.Domain
 }
-
-
