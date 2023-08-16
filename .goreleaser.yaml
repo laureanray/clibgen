@@ -13,6 +13,8 @@ builds:
       - linux
       - windows
       - darwin
+    ldflags:
+      - -s -w -X github.com/laureanray/clibgen/cmd.version={{.Version}}
 checksum:
   name_template: 'checksums.txt'
 snapshot:
