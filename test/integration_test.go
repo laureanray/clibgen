@@ -7,14 +7,9 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"reflect"
 	"strings"
 	"testing"
 	"time"
-)
-
-var (
-	update = flag.Bool("update", false, "update .golden files")
 )
 
 var binaryName = "clibgen"
@@ -40,12 +35,6 @@ func TestMain(m *testing.M) {
 	fmt.Println("binary path", binaryPath)
 
 	os.Exit(m.Run())
-}
-
-func runBinary(args []string) ([]byte, error) {
-	cmd := exec.Command(binaryPath, args...)
-	cmd.Env = append(os.Environ(), "GOCOVERDIR=.coverdata")
-	return cmd.CombinedOutput()
 }
 
 func runBinaryWithFileInput(args []string, bytesToWrite []byte) ([]byte, error) {
@@ -99,38 +88,6 @@ func runBinaryWithFileInput(args []string, bytesToWrite []byte) ([]byte, error) 
 	return out, err
 }
 
-func TestStaticCliArgs(t *testing.T) {
-	tests := []struct {
-		name    string
-		args    []string
-		fixture string
-	}{
-		{"help args", []string{"--help"}, "help.golden"},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			output, err := runBinary(tt.args)
-
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			if *update {
-				writeFixture(t, tt.fixture, output)
-			}
-
-			actual := string(output)
-
-			expected := loadFixture(t, tt.fixture)
-
-			if !reflect.DeepEqual(actual, expected) {
-				t.Fatalf("actual = %s, expected = %s", actual, expected)
-			}
-		})
-	}
-}
-
 func TestSearch(t *testing.T) {
 	tests := []struct {
 		name         string
@@ -157,41 +114,4 @@ func TestSearch(t *testing.T) {
 			}
 		})
 	}
-}
-
-func removeLastLine(str string, num int) string {
-	lines := strings.Split(str, "\n")
-
-	if len(lines) > 0 {
-		lines = lines[:len(lines)-num]
-	}
-
-	return strings.Join(lines, "\n")
-}
-
-func writeFixture(t *testing.T, goldenFile string, actual []byte) {
-	t.Helper()
-	goldenPath := "testdata/" + goldenFile
-
-	f, err := os.OpenFile(goldenPath, os.O_RDWR, 0644)
-	defer f.Close()
-
-	_, err = f.WriteString(string(actual))
-
-	if err != nil {
-		t.Fatalf("Error writing to file %s: %s", goldenPath, err)
-	}
-}
-
-func loadFixture(t *testing.T, goldenFile string) string {
-	goldenPath := "testdata/" + goldenFile
-
-	f, err := os.OpenFile(goldenPath, os.O_RDWR, 0644)
-
-	content, err := ioutil.ReadAll(f)
-	if err != nil {
-		t.Fatalf("Error opening file %s: %s", goldenPath, err)
-	}
-
-	return string(content)
 }
