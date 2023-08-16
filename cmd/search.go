@@ -27,8 +27,7 @@ func getExtension(s string) string {
 }
 
 var (
-	selectedSite    string
-	selectedFilter  string
+  selectedFilter  string
 	outputDirectory string
 	numberOfResults = 10
 
@@ -43,23 +42,15 @@ var (
 				return
 			}
 
-			var m mirror.Mirror
-
-			if selectedSite == "legacy" {
-				m = mirror.NewLegacyMirror(libgen.IS)
-			} else if selectedSite == "new" {
-				m = mirror.NewCurrentMirror(libgen.LC)
-			} else {
-				// TODO: Improve this.
-				fmt.Print("Not an option")
-				return
-			}
+      m := mirror.NewLegacyMirror(libgen.IS)
 
 			var books []book.Book
 
 			switch selectedFilter {
 			case libgen.AUTHOR:
 				books, _ = m.SearchByAuthor(args[0])
+      case libgen.ISBN:
+        books, _ = m.SearchByTitle(args[0])
 			default:
 				books, _ = m.SearchByTitle(args[0])
 			}
@@ -95,10 +86,6 @@ var (
 )
 
 func init() {
-	searchCmd.
-		PersistentFlags().
-		StringVarP(&selectedSite, "site", "s", "legacy", `which website to use [legacy, new]`)
-
 	searchCmd.
 		PersistentFlags().
 		StringVarP(&selectedFilter, "filter", "f", "title", `search by [title, author, isbn]`)

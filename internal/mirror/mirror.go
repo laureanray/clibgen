@@ -8,8 +8,7 @@ import (
 type Mirror interface {
 	SearchByTitle(query string) ([]book.Book, error)
 	SearchByAuthor(author string) ([]book.Book, error)
-	// SearchByISBN(isbn string) []book.Book
-	// 1GetDownloadLink(book book.Book) string
+	SearchByISBN(isbn string) ([]book.Book, error)
 	DownloadSelection(book book.Book, outputDirectory string)
 }
 
@@ -21,3 +20,5 @@ type Configuration struct {
 type NewMirror struct {
 	domain libgen.Domain
 }
+
+
