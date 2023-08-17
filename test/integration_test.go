@@ -94,7 +94,7 @@ func TestSearch(t *testing.T) {
 		args         []string
 		bytesToWrite []byte
 	}{
-		{"search test", []string{"search", "Eloquent JavaScript"}, []byte{14, 14, 10}},
+		{"search test", []string{"search", "Eloquent JavaScript", "-l", "faster"}, []byte{14, 14, 10}},
 	}
 
 	for _, tt := range tests {
