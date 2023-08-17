@@ -8,6 +8,7 @@ clibgen is a TUI for library genesis. (https://libgen.li, https://libgen.is)
 
 Shell Installation (Mac, Linux)
 
+*Install Latest Release*
 ```shell
 curl -fsSL https://raw.githubusercontent.com/laureanray/clibgen/main/install.sh | sh
 ```
@@ -33,15 +34,15 @@ clibgen search "Eloquent JavaScript"
 ```
 
 #### Search
-
 Usage:
-`  clibgen search [flags]`
+  clibgen search [flags]
 
 Flags:
--  -f, --filter string           search by [title, author, isbn] (default "title")
--  -h, --help                    help for search
--  -n, --number of results int   number of result(s) to be displayed maximum: 25 (default 10)
--  -o, --output string           Output directory (default "./")
+  -f, --filter string           search by [title, author, isbn] (default "title")
+  -h, --help                    help for search
+  -l, --l string                Standard or Faster Download link (default usually works for most of the files) [default, faster] (default "default")
+  -n, --number of results int   number of result(s) to be displayed maximum: 25 (default 10)
+  -o, --output string           Output directory (default "./")
 
 
 ### Found an issue?
