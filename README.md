@@ -34,6 +34,7 @@ clibgen search "Eloquent JavaScript"
 ```
 
 #### Search
+```
 Usage:
   clibgen search [flags]
 
@@ -43,7 +44,7 @@ Flags:
   -l, --l string                Standard or Faster Download link (default usually works for most of the files) [default, faster] (default "default")
   -n, --number of results int   number of result(s) to be displayed maximum: 25 (default 10)
   -o, --output string           Output directory (default "./")
-
+```
 
 ### Found an issue?
 
