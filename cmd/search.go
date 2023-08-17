@@ -27,7 +27,8 @@ func getExtension(s string) string {
 }
 
 var (
-  selectedFilter  string
+	selectedFilter  string
+	linkType        string
 	outputDirectory string
 	numberOfResults int
 
@@ -42,18 +43,18 @@ var (
 				return
 			}
 
-      m := mirror.NewLegacyMirror(libgen.IS)
+			m := mirror.NewLegacyMirror(libgen.IS)
 
-      // Set Defaults
-      m.SetNumberOfResults(numberOfResults)
+			// Set Defaults
+			m.SetNumberOfResults(numberOfResults)
 
 			var books []book.Book
 
 			switch selectedFilter {
 			case libgen.AUTHOR:
 				books, _ = m.SearchByAuthor(args[0])
-      case libgen.ISBN:
-        books, _ = m.SearchByTitle(args[0])
+			case libgen.ISBN:
+				books, _ = m.SearchByTitle(args[0])
 			default:
 				books, _ = m.SearchByTitle(args[0])
 			}
@@ -74,7 +75,7 @@ var (
 			prompt := promptui.Select{
 				Label: "Select Title",
 				Items: titles,
-        Size: 10,
+				Size:  10,
 			}
 
 			resultInt, _, err := prompt.Run()
@@ -84,7 +85,7 @@ var (
 				return
 			}
 
-			m.DownloadSelection(books[resultInt], outputDirectory)
+			m.DownloadSelection(books[resultInt], outputDirectory, linkType)
 		},
 	}
 )
@@ -97,6 +98,10 @@ func init() {
 	searchCmd.
 		PersistentFlags().
 		StringVarP(&outputDirectory, "output", "o", "./", `Output directory`)
+
+	searchCmd.
+		PersistentFlags().
+		StringVarP(&linkType, "l", "l", "default", `Standard or Faster Download link (default usually works for most of the files) [default, faster]`)
 
 	searchCmd.
 		PersistentFlags().

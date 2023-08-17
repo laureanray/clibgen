@@ -69,6 +69,10 @@ func (ldp *LegacyDocumentParser) GetBookDataFromDocument() []book.Book {
 }
 
 func (ldp *LegacyDocumentParser) getDownloadLinkFromDocument() (string, bool) {
+	return ldp.doc.Find("#download > h2 > a").First().Attr("href")
+}
+
+func (ldp *LegacyDocumentParser) getFasterDownloadLinkFromDocument() (string, bool) {
 	return ldp.doc.Find("#download > ul > li > a").First().Attr("href")
 }
 
@@ -87,7 +91,7 @@ func getBookTitleFromSelection(selection *goquery.Selection) string {
 	return title
 }
 
-func GetDirectDownloadLinkFromLegacy(link string) string {
+func GetDirectDownloadLinkFromLegacy(link string, linkType string) string {
 	fmt.Println("Obtaining direct download link")
 	resp, err := http.Get(link)
 	defer func(Body io.ReadCloser) {
@@ -103,10 +107,17 @@ func GetDirectDownloadLinkFromLegacy(link string) string {
 	}
 
 	page := NewLegacyDocumentParserFromReader(resp.Body)
-	// TODO: I think this can be improved
-	directDownloadLink, exists := page.getDownloadLinkFromDocument()
 
-	fmt.Println("Direct download link:", directDownloadLink)
+  var directDownloadLink string
+  var exists bool
+
+  if (linkType == "faster") {
+    directDownloadLink, exists = page.getFasterDownloadLinkFromDocument()
+  } else {
+    directDownloadLink, exists = page.getDownloadLinkFromDocument()
+  }
+
+	fmt.Printf("[%s] Direct download link: [%s]\n", linkType, directDownloadLink)
 
 	if exists {
 		return directDownloadLink
