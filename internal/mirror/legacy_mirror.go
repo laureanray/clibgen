@@ -31,7 +31,7 @@ func NewLegacyMirror(domain libgen.Domain) *LegacyMirror {
 }
 
 func (m *LegacyMirror) SetNumberOfResults(numberOfResults int) {
-  m.config.numberOfResults = numberOfResults
+	m.config.numberOfResults = numberOfResults
 }
 
 func (m *LegacyMirror) SearchByTitle(query string) ([]book.Book, error) {
@@ -81,7 +81,6 @@ func (m *LegacyMirror) SearchByISBN(isbn string) ([]book.Book, error) {
 
 	return bookResults, err
 }
-
 
 func (m *LegacyMirror) SearchByAuthor(query string) ([]book.Book, error) {
 	fmt.Println("Searching by author: ", console.Higlight(query))

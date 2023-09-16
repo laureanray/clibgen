@@ -18,7 +18,7 @@ type Downloader struct {
 	selectedBook  book.Book
 	directLink    string
 	outputFileDir string
-  linkType string;
+	linkType      string
 }
 
 func NewDownloader(selectedBook book.Book, directLink string, outputFileDir string) *Downloader {
@@ -55,9 +55,9 @@ func (d *Downloader) Download() error {
 
 	bytes, err := io.Copy(io.MultiWriter(f, bar), resp.Body)
 
-  // Check if byte size is unusually low
+	// Check if byte size is unusually low
 	if bytes <= 200 || err != nil {
-    fmt.Println(console.Error("File downloaded with unusually low bytes size: %d bytes", bytes))
+		fmt.Println(console.Error("File downloaded with unusually low bytes size: %d bytes", bytes))
 	} else {
 		fmt.Println(console.Success("File successfully downloaded: %s", f.Name()))
 	}

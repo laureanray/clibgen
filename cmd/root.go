@@ -18,12 +18,12 @@ Useful if you are lazy to open up a browser to download e-books/resources.`,
 }
 
 var versionCmd = &cobra.Command{
-  Use:   "version",
-  Short: "Print the version number of Hugo",
-  Long:  `All software has versions. This is Hugo's`,
-  Run: func(cmd *cobra.Command, args []string) {
-    fmt.Println(version)
-  },
+	Use:   "version",
+	Short: "Print the version number of Hugo",
+	Long:  `All software has versions. This is Hugo's`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(version)
+	},
 }
 
 func Execute() {
@@ -34,5 +34,5 @@ func Execute() {
 }
 
 func init() {
-  rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(versionCmd)
 }
