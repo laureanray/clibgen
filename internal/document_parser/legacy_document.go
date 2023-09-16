@@ -108,14 +108,14 @@ func GetDirectDownloadLinkFromLegacy(link string, linkType string) string {
 
 	page := NewLegacyDocumentParserFromReader(resp.Body)
 
-  var directDownloadLink string
-  var exists bool
+	var directDownloadLink string
+	var exists bool
 
-  if (linkType == "faster") {
-    directDownloadLink, exists = page.getFasterDownloadLinkFromDocument()
-  } else {
-    directDownloadLink, exists = page.getDownloadLinkFromDocument()
-  }
+	if linkType == "faster" {
+		directDownloadLink, exists = page.getFasterDownloadLinkFromDocument()
+	} else {
+		directDownloadLink, exists = page.getDownloadLinkFromDocument()
+	}
 
 	fmt.Printf("[%s] Direct download link: [%s]\n", linkType, directDownloadLink)
 
