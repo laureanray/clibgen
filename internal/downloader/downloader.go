@@ -5,12 +5,14 @@ import (
 	"io"
 	"net/http"
 	"os"
+
 	"path/filepath"
 	"strings"
 
 	"github.com/kennygrant/sanitize"
 	"github.com/laureanray/clibgen/internal/book"
 	"github.com/laureanray/clibgen/internal/console"
+	"github.com/manifoldco/promptui"
 	"github.com/schollz/progressbar/v3"
 )
 
@@ -45,8 +47,32 @@ func (d *Downloader) Download() error {
 
 	fmt.Println("Downloading to: ", filename)
 
-	f, _ := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666)
-	defer f.Close()
+	var f *os.File
+	// Check if file exists
+	if _, err := os.Stat(filename); err == nil {
+		prompt := promptui.Select{
+			Label: "File Exists. Do you want to replace file?",
+			Items: []string{"Yes", "No"},
+		}
+		_, result, err := prompt.Run()
+
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+			return err
+		}
+
+		if result == "Yes" {
+			// file doesnt exists
+			f, _ = os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666)
+			defer f.Close()
+		} else {
+			os.Exit(1)	
+		}
+	} else {
+		// file doesnt exists
+		f, _ = os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0666)
+		defer f.Close()
+	}
 
 	bar := progressbar.DefaultBytes(
 		resp.ContentLength,
